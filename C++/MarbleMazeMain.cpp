@@ -857,8 +857,6 @@ void MarbleMazeMain::Update()
         }
 
 		// Process controller input.
-#if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP // Only process controller input when the device is not a phone.
-
 		if (m_currentGamepadNeedsRefresh)
 		{
 			auto mostRecentGamepad = GetLastGamepad();
@@ -888,8 +886,6 @@ void MarbleMazeMain::Update()
 			combinedTiltX += leftStickX * m_controllerScaleFactor;
 			combinedTiltY += leftStickY * m_controllerScaleFactor;
 		}
-
-#endif
 
         // Account for touch input.
         for (TouchMap::const_iterator iter = m_touches.cbegin(); iter != m_touches.cend(); ++iter)

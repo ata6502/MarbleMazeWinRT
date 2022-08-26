@@ -56,15 +56,12 @@ struct App : winrt::implements<App, IFrameworkViewSource, IFrameworkView>
     {
         m_deviceResources->SetWindow(window);
 
-#if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
-        // API's not available on Phone
         window.PointerCursor(CoreCursor(CoreCursorType::Arrow, 0));
 
         // Disable all pointer visual feedback for better performance when touching.
         PointerVisualizationSettings visualizationSettings{ PointerVisualizationSettings::GetForCurrentView() };
         visualizationSettings.IsContactFeedbackEnabled(false);
         visualizationSettings.IsBarrelButtonFeedbackEnabled(false);
-#endif
 
         // Window event handlers.
         window.Activated({ this, &App::OnWindowActivationChanged });
@@ -98,7 +95,6 @@ struct App : winrt::implements<App, IFrameworkViewSource, IFrameworkView>
             m_main = winrt::make_self<MarbleMaze::MarbleMazeMain>(m_deviceResources);
         }
 
-        // On Windows Phone the Load method may be called when resuming from a suspended state.
         // IsDeferredLoadReady checks to see if resources have already been loaded.
         // If they have been loaded then the deferred load is skipped.
         // This is more efficient, and it avoids a potential race condition where the application

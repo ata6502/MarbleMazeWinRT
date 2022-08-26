@@ -220,10 +220,6 @@ void DeviceResources::CreateWindowSizeDependentResources()
     m_d3dRenderTargetSize.Width = swapDimensions ? m_outputSize.Height : m_outputSize.Width;
     m_d3dRenderTargetSize.Height = swapDimensions ? m_outputSize.Width : m_outputSize.Height;
 
-#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-    // ResizeBuffers is not available on the Phone for CoreWindow so the swapChain needs to be recreated.
-    m_swapChain = nullptr;
-#endif
     if (m_swapChain != nullptr)
     {
         // If the swap chain already exists, resize it.
@@ -336,11 +332,9 @@ void DeviceResources::CreateWindowSizeDependentResources()
         winrt::throw_hresult(E_FAIL);
     }
 
-#if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
     winrt::check_hresult(
         m_swapChain->SetRotation(displayRotation)
     );
-#endif
 
     // Create a render target view of the swap chain back buffer.
     winrt::com_ptr<ID3D11Texture2D> backBuffer = winrt::capture<ID3D11Texture2D>(m_swapChain, &IDXGISwapChain1::GetBuffer, 0);
@@ -494,6 +488,7 @@ void DeviceResources::ValidateDevice()
     winrt::check_hresult(deviceFactory->EnumAdapters1(0, previousDefaultAdapter.put()));
 
     DXGI_ADAPTER_DESC previousDesc;
+    ZeroMemory(&previousDesc, sizeof(previousDesc));
     winrt::check_hresult(previousDefaultAdapter->GetDesc(&previousDesc));
 
     // Next, get the information for the current default adapter.
@@ -505,6 +500,7 @@ void DeviceResources::ValidateDevice()
     winrt::check_hresult(currentFactory->EnumAdapters1(0, currentDefaultAdapter.put()));
 
     DXGI_ADAPTER_DESC currentDesc;
+    ZeroMemory(&currentDesc, sizeof(currentDesc));
     winrt::check_hresult(currentDefaultAdapter->GetDesc(&currentDesc));
 
     // If the adapter LUIDs don't match, or if the device reports that it has been removed,

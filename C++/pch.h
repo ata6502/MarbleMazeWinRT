@@ -32,10 +32,7 @@
 #include <mfreadwrite.h>
 #include <mfmediaengine.h>
 
-#if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
-// XINPUT is not available on phone.
 #include <XInput.h> 
-#endif
 
 #include <stdio.h>
 #include <strsafe.h>

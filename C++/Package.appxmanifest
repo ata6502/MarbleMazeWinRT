@@ -4,7 +4,7 @@
   <mp:PhoneIdentity PhoneProductId="bc04fad1-e353-47aa-ab0f-2a814e7d7d7f" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>DirectX Marble Maze game C++ sample</DisplayName>
-    <PublisherDisplayName>Microsoft Corporation (ported to WinRT by Wisenheimer Brainstorm)</PublisherDisplayName>
+    <PublisherDisplayName>Microsoft Corporation (ported to WinRT by ata6502)</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
