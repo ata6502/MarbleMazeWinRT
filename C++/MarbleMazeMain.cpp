@@ -42,7 +42,9 @@ MarbleMazeMain::MarbleMazeMain(std::shared_ptr<DX::DeviceResources> const& devic
     m_homeKeyActive(false),
     m_homeKeyPressed(false),
     m_windowActive(false),
-    m_deferredResourcesReady(false)
+    m_deferredResourcesReady(false),
+    m_windowClosed(false),
+    m_windowVisible(true)
 {
     // Register to be notified if the Device is lost or recreated.
     m_deviceResources->RegisterDeviceNotify(this);
@@ -255,6 +257,33 @@ void MarbleMazeMain::CreateWindowSizeDependentResources()
     }
 
     m_sampleOverlay->CreateWindowSizeDependentResources();
+}
+
+void MarbleMazeMain::Run()
+{
+    using namespace winrt::Windows::UI::Core;
+
+    while (!m_windowClosed)
+    {
+        if (m_windowVisible)
+        {
+            CoreWindow::GetForCurrentThread().Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+
+            Update();
+
+            if (Render())
+            {
+                m_deviceResources->Present();
+            }
+        }
+        else
+        {
+            CoreWindow::GetForCurrentThread().Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
+        }
+    }
+
+    // The app is exiting so do the same thing as would if app was being suspended.
+    OnSuspending();
 }
 
 winrt::Windows::Foundation::IAsyncAction MarbleMazeMain::LoadDeferredResourcesAsync(bool delay, bool deviceOnly)
@@ -1327,6 +1356,16 @@ void MarbleMazeMain::OnFocusChange(bool active)
     }
 
     m_windowActive = active;
+}
+
+void MarbleMazeMain::SetWindowVisibility(bool visible)
+{
+    m_windowVisible = visible;
+}
+
+void MarbleMazeMain::SetWindowClosed()
+{
+    m_windowClosed = true;
 }
 
 FORCEINLINE int FindMeshIndexByName(SDKMesh& mesh, const char* meshName)

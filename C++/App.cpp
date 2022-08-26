@@ -25,12 +25,6 @@ using namespace winrt::Windows::UI::Input;
 // The main entry point for our app. Connects the app with the Windows shell and handles application lifecycle events.
 struct App : winrt::implements<App, IFrameworkViewSource, IFrameworkView>
 {
-    App() :
-        m_windowClosed(false),
-        m_windowVisible(true)
-    {
-    }
-
     IFrameworkView CreateView()
     {
         return *this;
@@ -115,27 +109,7 @@ struct App : winrt::implements<App, IFrameworkViewSource, IFrameworkView>
     // Called after the window becomes active.
     void Run()
     {
-        while (!m_windowClosed)
-        {
-            if (m_windowVisible)
-            {
-                CoreWindow::GetForCurrentThread().Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
-
-                m_main->Update();
-
-                if (m_main->Render())
-                {
-                    m_deviceResources->Present();
-                }
-            }
-            else
-            {
-                CoreWindow::GetForCurrentThread().Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
-            }
-        }
-
-        // The app is exiting so do the same thing as would if app was being suspended.
-        m_main->OnSuspending();
+        m_main->Run();
 
 #ifdef _DEBUG
         // Dump debug info when exiting.
@@ -149,7 +123,7 @@ struct App : winrt::implements<App, IFrameworkViewSource, IFrameworkView>
     {
         // Run() won't start until the CoreWindow is activated.
         CoreWindow::GetForCurrentThread().Activate();
-        m_windowVisible = true;
+        m_main->SetWindowVisibility(true);
     }
 
     winrt::fire_and_forget OnSuspending([[maybe_unused]] IInspectable const& sender, [[maybe_unused]] SuspendingEventArgs const& args)
@@ -202,12 +176,12 @@ struct App : winrt::implements<App, IFrameworkViewSource, IFrameworkView>
 
     void OnVisibilityChanged([[maybe_unused]] CoreWindow const& sender, VisibilityChangedEventArgs const& args)
     {
-        m_windowVisible = args.Visible();
+        m_main->SetWindowVisibility(args.Visible());
     }
 
     void OnWindowClosed([[maybe_unused]] CoreWindow const& sender, [[maybe_unused]] CoreWindowEventArgs const& args)
     {
-        m_windowClosed = true;
+        m_main->SetWindowClosed();
     }
     #pragma endregion
 
@@ -244,7 +218,7 @@ struct App : winrt::implements<App, IFrameworkViewSource, IFrameworkView>
         // Pressing F4 cause the app to exit, so that DumpD3DDebug method gets called on exit.
         if (args.VirtualKey() == VirtualKey::F4)
         {
-            m_windowClosed = true;
+            m_main->SetWindowClosed();
         }
 #endif // _DEBUG
     }
@@ -273,8 +247,6 @@ struct App : winrt::implements<App, IFrameworkViewSource, IFrameworkView>
 private:
     std::shared_ptr<DX::DeviceResources> m_deviceResources;
     winrt::com_ptr<MarbleMaze::MarbleMazeMain> m_main;
-    bool m_windowClosed;
-    bool m_windowVisible;
 
 #ifdef _DEBUG
     // App method that deletes all D3D resources, dumps debug info.

@@ -71,8 +71,7 @@ namespace MarbleMaze
         virtual void OnDeviceRestored();
         
         void CreateWindowSizeDependentResources();
-        void Update();
-        bool Render();
+        void Run();
 
         winrt::Windows::Foundation::IAsyncAction LoadDeferredResourcesAsync(bool delay, bool deviceOnly);
 
@@ -86,6 +85,8 @@ namespace MarbleMaze
         void KeyUp(winrt::Windows::System::VirtualKey key);
         void OnFocusChange(bool active);
         bool IsDeferredLoadReady() {return m_deferredResourcesReady;}
+        void SetWindowVisibility(bool visible);
+        void SetWindowClosed();
 
     private:
         // Cached pointer to device resources.
@@ -158,6 +159,9 @@ namespace MarbleMaze
         const float                                         m_touchScaleFactor = 2.0f;
         const float                                         m_accelerometerScaleFactor = 3.5f;
 
+        bool                                                m_windowClosed;
+        bool                                                m_windowVisible;
+
         HRESULT ExtractTrianglesFromMesh(
             SDKMesh& mesh,
             const char* meshName,
@@ -167,6 +171,8 @@ namespace MarbleMaze
         void ResetCheckpoints();
         CheckpointState UpdateCheckpoints();
 
+        void Update();
+        bool Render();
         void SetGameState(GameState nextState);
         void SaveState();
         void LoadState();
