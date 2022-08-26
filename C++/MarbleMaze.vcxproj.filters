@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>1fef1241-e4e9-40ac-af29-51b8f7c6f932</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>2443006d-28ac-4e4e-8d76-c9b3a317133a</UniqueIdentifier>
+      <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
+    </Filter>
+    <Filter Include="Media">
+      <UniqueIdentifier>{2e028688-7010-45d1-b1e6-da0d2cffda68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Media\Audio">
+      <UniqueIdentifier>{6d958452-c70c-42d6-81a2-be2abef13935}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Media\Textures">
+      <UniqueIdentifier>{e8438183-67b4-4ba2-a8c6-933e2f67a245}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Media\Models">
+      <UniqueIdentifier>{43f4c5b9-46de-4d7e-8982-3f9ba9605f65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Content">
+      <UniqueIdentifier>{86d6bab2-144a-4b30-a791-8720ff2dd297}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Media\Audio\background.wma">
+      <Filter>Media\Audio</Filter>
+    </None>
+    <None Include="Media\Models\marble2.sdkmesh">
+      <Filter>Media\Models</Filter>
+    </None>
+    <None Include="Media\Models\maze1.sdkmesh">
+      <Filter>Media\Models</Filter>
+    </None>
+    <None Include="MarbleMaze_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Media\Textures\bridge.dds">
+      <Filter>Media\Textures</Filter>
+    </Image>
+    <Image Include="Media\Textures\bridge_bump.dds">
+      <Filter>Media\Textures</Filter>
+    </Image>
+    <Image Include="Media\Textures\cliff_sides.dds">
+      <Filter>Media\Textures</Filter>
+    </Image>
+    <Image Include="Media\Textures\floor_section1.dds">
+      <Filter>Media\Textures</Filter>
+    </Image>
+    <Image Include="Media\Textures\floor_section2.dds">
+      <Filter>Media\Textures</Filter>
+    </Image>
+    <Image Include="Media\Textures\loadscreen.png">
+      <Filter>Media\Textures</Filter>
+    </Image>
+    <Image Include="Media\Textures\Marble.dds">
+      <Filter>Media\Textures</Filter>
+    </Image>
+    <Image Include="Media\Textures\topwall_color.dds">
+      <Filter>Media\Textures</Filter>
+    </Image>
+    <Image Include="Media\Textures\walllevel1.dds">
+      <Filter>Media\Textures</Filter>
+    </Image>
+    <Image Include="Media\Textures\windowstitle-sdk.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SmallTile.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\AppIcon.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\MediumTile.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\WideTile.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="MarbleMazeMain.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Common\PersistentState.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\LoadScreen.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\Physics.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\Collision.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\Camera.cpp" />
+    <ClCompile Include="Content\SDKMesh.cpp" />
+    <ClCompile Include="Common\BasicReaderWriter.cpp" />
+    <ClCompile Include="Common\BasicLoader.cpp" />
+    <ClCompile Include="Content\SampleOverlay.cpp" />
+    <ClCompile Include="Common\MediaStreamer.cpp" />
+    <ClCompile Include="Content\Audio.cpp" />
+    <ClCompile Include="Common\DDSTextureLoader.cpp" />
+    <ClCompile Include="UserInterface\CountdownTimer.cpp" />
+    <ClCompile Include="UserInterface\ElementBase.cpp" />
+    <ClCompile Include="UserInterface\HighScoreTable.cpp" />
+    <ClCompile Include="UserInterface\StopwatchTimer.cpp" />
+    <ClCompile Include="UserInterface\TextButton.cpp" />
+    <ClCompile Include="UserInterface\TextElement.cpp" />
+    <ClCompile Include="UserInterface\TextStyle.cpp" />
+    <ClCompile Include="UserInterface\UserInterface.cpp" />
+    <ClCompile Include="Common\DeviceResources.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MarbleMazeMain.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Common\PersistentState.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\LoadScreen.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\Physics.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\Collision.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\Camera.h" />
+    <ClInclude Include="Content\SDKMesh.h" />
+    <ClInclude Include="Common\BasicReaderWriter.h" />
+    <ClInclude Include="Common\BasicLoader.h" />
+    <ClInclude Include="Content\SampleOverlay.h" />
+    <ClInclude Include="Common\MediaStreamer.h" />
+    <ClInclude Include="Content\Audio.h" />
+    <ClInclude Include="Common\DDSTextureLoader.h" />
+    <ClInclude Include="Common\BasicMath.h" />
+    <ClInclude Include="Common\StepTimer.h" />
+    <ClInclude Include="Common\Primitives.h" />
+    <ClInclude Include="UserInterface\CountdownTimer.h" />
+    <ClInclude Include="UserInterface\ElementBase.h" />
+    <ClInclude Include="UserInterface\HighScoreTable.h" />
+    <ClInclude Include="UserInterface\StopwatchTimer.h" />
+    <ClInclude Include="UserInterface\TextButton.h" />
+    <ClInclude Include="UserInterface\TextElement.h" />
+    <ClInclude Include="UserInterface\TextStyle.h" />
+    <ClInclude Include="UserInterface\UserInterface.h" />
+    <ClInclude Include="Common\DeviceResources.h" />
+    <ClInclude Include="Common\DirectXHelper.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Media\Audio\Checkpoint.wav">
+      <Filter>Media\Audio</Filter>
+    </Media>
+    <Media Include="Media\Audio\MarbleFall.wav">
+      <Filter>Media\Audio</Filter>
+    </Media>
+    <Media Include="Media\Audio\MarbleHit.wav">
+      <Filter>Media\Audio</Filter>
+    </Media>
+    <Media Include="Media\Audio\MarbleRoll.wav">
+      <Filter>Media\Audio</Filter>
+    </Media>
+    <Media Include="Media\Audio\MenuChange.wav">
+      <Filter>Media\Audio</Filter>
+    </Media>
+    <Media Include="Media\Audio\MenuSelect.wav">
+      <Filter>Media\Audio</Filter>
+    </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\BasicPixelShader.hlsl" />
+    <FxCompile Include="Shaders\BasicVertexShader.hlsl" />
+  </ItemGroup>
+</Project>
