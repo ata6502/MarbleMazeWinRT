@@ -1186,15 +1186,11 @@ void MarbleMazeMain::SaveState()
 
     int i = 0;
     HighScoreEntries entries = m_highScoreTable.GetEntries();
-    const int bufferLength = 16;
-    wchar_t bufferString[bufferLength];
 
     m_persistentState.SaveInt32(L":ScoreCount", static_cast<int>(entries.size()));
     for (auto iter = entries.begin(); iter != entries.end(); ++iter)
     {
-        int len = swprintf_s(bufferString, bufferLength, L"%d", i++);
-        std::wstring str(bufferString, len);
-
+        auto str = std::to_wstring(i++);
         m_persistentState.SaveSingle(L":ScoreTime" + str, iter->elapsedTime);
         m_persistentState.SaveString(L":ScoreTag" + str, iter->tag);
     }
@@ -1234,15 +1230,11 @@ void MarbleMazeMain::LoadState()
 
     int count = m_persistentState.LoadInt32(L":ScoreCount", 0);
 
-    const int bufferLength = 16;
-    wchar_t bufferString[bufferLength];
-
     for (int i = 0; i < count; i++)
     {
-        HighScoreEntry entry;
-        int len = swprintf_s(bufferString, bufferLength, L"%d", i);
-        std::wstring str(bufferString, len);
+        auto str = std::to_wstring(i);
 
+        HighScoreEntry entry;
         entry.elapsedTime = m_persistentState.LoadSingle(L":ScoreTime" + str, 0.0f);
         entry.tag = m_persistentState.LoadString(L":ScoreTag" + str, L"");
         m_highScoreTable.AddScoreToTable(entry);
