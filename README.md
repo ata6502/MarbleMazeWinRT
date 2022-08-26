@@ -52,7 +52,7 @@ Complete content that examines this code can be found at
 
 - Windows 10. Minimum: Windows 10, version 1809 (10.0; Build 17763, also known as the Windows 10 October 2018 Update).
 - [Windows 10 SDK](https://developer.microsoft.com/windows/downloads/windows-10-sdk). Minimum: Windows SDK version 10.0.17763.0 (Windows 10, version 1809).
-- [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/) (or Visual Studio 2017). You can use the free Visual Studio Community Edition to build and run Windows Universal Platform (UWP) apps.
+- [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/). You can use the free Visual Studio Community Edition to build and run Windows Universal Platform (UWP) apps.
 
 To get the latest updates to Windows and the development tools, and to help shape their development, join 
 the [Windows Insider Program](https://insider.windows.com).
