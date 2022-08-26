@@ -35,7 +35,8 @@ public:
     virtual void Update(float timeTotal, float timeDelta);
     virtual void Render();
 
-    void AddScoreToTable(HighScoreEntry& entry);
+    void AddEntry(HighScoreEntry& entry);
+    void AddNewEntry(HighScoreEntry& newEntry);
     HighScoreEntries GetEntries() { return m_entries; };
     void Reset();
 

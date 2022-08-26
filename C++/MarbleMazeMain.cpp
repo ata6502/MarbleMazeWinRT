@@ -668,6 +668,7 @@ void MarbleMazeMain::SetGameState(GameState nextState)
         m_inGameStopwatchTimer.SetVisible(false);
         m_resultsText.SetVisible(true);
         {
+            // Show post-game info.
             WCHAR formattedTime[32];
             m_inGameStopwatchTimer.GetFormattedTime(formattedTime, m_newHighScore.elapsedTime);
             WCHAR buffer[64];
@@ -980,6 +981,7 @@ void MarbleMazeMain::Update()
                 break;
 
             case CheckpointState::Goal:
+                // Add the new high score.
                 m_inGameStopwatchTimer.Stop();
                 m_newHighScore.elapsedTime = m_inGameStopwatchTimer.GetElapsedTime();
                 SYSTEMTIME systemTime;
@@ -987,7 +989,7 @@ void MarbleMazeMain::Update()
                 WCHAR buffer[64];
                 swprintf_s(buffer, L"%d/%d/%d", systemTime.wYear, systemTime.wMonth, systemTime.wDay);
                 m_newHighScore.tag = std::wstring(buffer);
-                m_highScoreTable.AddScoreToTable(m_newHighScore);
+                m_highScoreTable.AddNewEntry(m_newHighScore);
 
                 m_audio.PlaySoundEffect(CheckpointEvent);
                 m_audio.StopSoundEffect(RollingEvent);
@@ -1237,7 +1239,7 @@ void MarbleMazeMain::LoadState()
         HighScoreEntry entry;
         entry.elapsedTime = m_persistentState.LoadSingle(L":ScoreTime" + str, 0.0f);
         entry.tag = m_persistentState.LoadString(L":ScoreTag" + str, L"");
-        m_highScoreTable.AddScoreToTable(entry);
+        m_highScoreTable.AddEntry(entry);
     }
 }
 

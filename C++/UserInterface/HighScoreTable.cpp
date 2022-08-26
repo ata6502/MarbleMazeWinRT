@@ -12,6 +12,8 @@
 #include "HighScoreTable.h"
 #include "StopwatchTimer.h"
 
+#include <sstream> // ostringstream
+
 HighScoreTable::HighScoreTable()
 {
 }
@@ -38,24 +40,27 @@ void HighScoreTable::Render()
     TextElement::Render();
 }
 
-void HighScoreTable::AddScoreToTable(HighScoreEntry& entry)
+void HighScoreTable::AddEntry(HighScoreEntry& entry)
 {
-    for (auto iter = m_entries.begin(); iter != m_entries.end(); ++iter)
-    {
-        iter->wasJustAdded = false;
-    }
-
     entry.wasJustAdded = false;
+    m_entries.push_back(entry);
+    UpdateText();
+}
 
-    for (auto iter = m_entries.begin(); iter != m_entries.end(); ++iter)
+void HighScoreTable::AddNewEntry(HighScoreEntry& newEntry)
+{
+    for (auto it = m_entries.begin(); it != m_entries.end(); ++it)
+        it->wasJustAdded = false;
+
+    newEntry.wasJustAdded = true;
+
+    for (auto it = m_entries.begin(); it != m_entries.end(); ++it)
     {
-        if (entry.elapsedTime < iter->elapsedTime)
+        if (newEntry.elapsedTime < it->elapsedTime)
         {
-            entry.wasJustAdded = true;
-            m_entries.insert(iter, entry);
-            while (m_entries.size() > MAX_HIGH_SCORES)
+            m_entries.insert(it, newEntry);
+            if (m_entries.size() > MAX_HIGH_SCORES)
                 m_entries.pop_back();
-
             UpdateText();
             return;
         }
@@ -63,37 +68,37 @@ void HighScoreTable::AddScoreToTable(HighScoreEntry& entry)
 
     if (m_entries.size() < MAX_HIGH_SCORES)
     {
-        entry.wasJustAdded = true;
-        m_entries.push_back(entry);
+        m_entries.push_back(newEntry);
         UpdateText();
     }
 }
 
 void HighScoreTable::UpdateText()
 {
-    WCHAR formattedTime[32];
-    WCHAR lines[1024] = { 0, };
-    WCHAR buffer[128];
+    std::wostringstream buffer;
+    buffer << L"High Scores:\n";
 
-    swprintf_s(lines, L"High Scores:");
-    for (unsigned int i = 0; i < MAX_HIGH_SCORES; ++i)
+    WCHAR formattedTime[32];
+    for (uint8_t i = 0; i < MAX_HIGH_SCORES; ++i)
     {
         if (i < m_entries.size())
         {
+            bool isNew = m_entries[i].wasJustAdded;
+
             StopwatchTimer::GetFormattedTime(formattedTime, m_entries[i].elapsedTime);
-            swprintf_s(
-                buffer,
-                (m_entries[i].wasJustAdded ? L"\n>> %s\t%s <<" : L"\n%s\t%s"),
-                m_entries[i].tag.c_str(),
-                formattedTime
-            );
-            wcscat_s(lines, buffer);
+            buffer << 
+                (isNew ? ">> " : "") <<
+                m_entries[i].tag << 
+                "\t" << 
+                formattedTime << 
+                (isNew ? "<< " : "") <<
+                std::endl;
         }
         else
         {
-            wcscat_s(lines, L"\n-");
+            buffer << L"-\n";
         }
     }
 
-    SetText(lines);
+    SetText(buffer.str());
 }
