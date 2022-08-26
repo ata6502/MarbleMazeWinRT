@@ -5,6 +5,7 @@ languages:
 products:
 - windows
 - windows-uwp
+- cpp-winrt
 statusNotificationTargets:
 - codefirst@microsoft.com
 ---
@@ -14,12 +15,10 @@ statusNotificationTargets:
   samplefwlink: http://go.microsoft.com/fwlink/?LinkId=624011
 --->
 
-# DirectX marble maze game sample
+# DirectX marble maze game sample ported to C++/WinRT and Visual Studio 2022
 
 This is a mini-app that shows how to build a basic 3D game using DirectX on the Universal Windows Platform (UWP). 
 It's a simple labyrinth game where the player is challenged to roll a marble through a maze of pitfalls using tilt, mouse, or gamepad controls.
-
-> Note - This sample is targeted and tested for Windows 10, version 2004 (10.0; Build 19041, also known as the Windows 10 May 2020 Update), and Visual Studio 2019. If you prefer, you can use project properties to retarget the project(s) to Windows 10, version 1903 (10.0; Build 18362, also known as the Windows 10 May 2019 Update).
 
 ![MarbleMaze app in action](MarbleMaze.png)
 
@@ -61,8 +60,8 @@ the [Windows Insider Program](https://insider.windows.com).
 ## Build the sample
 
 1. Unzip the archive.
-2. Start Microsoft Visual Studio 2017 and select **File** \> **Open** \> **Project/Solution...**
-3. Starting in the folder where you unzipped the sample, go to the **C++** subfolder. Double-click **MarbleMaze_VS2017.sln**.
+2. Start Microsoft Visual Studio 2022 and select **File** \> **Open** \> **Project/Solution...**
+3. Starting in the folder where you unzipped the sample, go to the **C++** subfolder. Double-click **MarbleMaze.sln**.
 4. Press Ctrl+Shift+B, or select **Build** \> **Build Solution**.
 
 ## Run the sample
@@ -76,6 +75,3 @@ Select **Build > Deploy Solution**.
 ### Deploying and running the sample
 
 To run the sample with debugging, press F5 or select **Debug > Start Debugging**. To run the sample without debugging, press Ctrl+F5 or select **Debug > Start Without Debugging**.
-
-
-
