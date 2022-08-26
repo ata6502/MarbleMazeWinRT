@@ -96,7 +96,7 @@ std::wstring BasicLoader::GetExtension(
 void BasicLoader::CreateTexture(
     _In_ bool decodeAsDDS,
     _In_reads_bytes_(dataSize) const byte* data,
-    _In_ uint32_t dataSize,
+    _In_ size_t dataSize,
     _Out_opt_ ID3D11Texture2D** texture,
     _Out_opt_ ID3D11ShaderResourceView** textureView,
     _In_opt_ winrt::hstring const& debugName
@@ -152,14 +152,14 @@ void BasicLoader::CreateTexture(
         winrt::com_ptr<IWICStream> stream;
         winrt::check_hresult(
             m_wicFactory->CreateStream(stream.put())
-            );
+        );
 
         winrt::check_hresult(
             stream->InitializeFromMemory(
                 const_cast<WICInProcPointer>(data),
-                dataSize
-                )
-            );
+                static_cast<DWORD>(dataSize)
+            )
+        );
 
         winrt::com_ptr<IWICBitmapDecoder> bitmapDecoder;
         winrt::check_hresult(
@@ -380,7 +380,7 @@ void BasicLoader::LoadTexture(
         texture,
         textureView,
         filename
-        );
+    );
 }
 
 winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadTextureAsync(
@@ -426,11 +426,11 @@ void BasicLoader::LoadShader(
     {
         CreateInputLayout(
             bytecode.data(),
-            bytecode.size(),
+            static_cast<uint32_t>(bytecode.size()),
             layoutDesc,
             layoutDescNumElements,
             layout
-            );
+        );
 
         if (*layout)
             SetDebugName(*layout, filename);

@@ -129,7 +129,10 @@ void TextElement::CalculateSize()
     CreateTextLayout();
 
     DWRITE_TEXT_METRICS metrics;
+    ZeroMemory(&metrics, sizeof(metrics));
     DWRITE_OVERHANG_METRICS overhangMetrics;
+    ZeroMemory(&overhangMetrics, sizeof(overhangMetrics));
+
     winrt::check_hresult(
         m_textLayout->GetMetrics(&metrics)
     );
@@ -161,7 +164,7 @@ void TextElement::CreateTextLayout()
         winrt::check_hresult(
             dwriteFactory->CreateTextLayout(
                 m_text.c_str(),
-                m_text.size(),
+                static_cast<uint32_t>(m_text.size()),
                 m_textStyle.GetTextFormat(),
                 m_container.right - m_container.left,
                 m_container.bottom - m_container.top,

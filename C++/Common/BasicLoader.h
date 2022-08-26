@@ -153,7 +153,7 @@ private:
     void CreateTexture(
         _In_ bool decodeAsDDS,
         _In_reads_bytes_(dataSize) const byte* data,
-        _In_ uint32_t dataSize,
+        _In_ size_t dataSize,
         _Out_opt_ ID3D11Texture2D** texture,
         _Out_opt_ ID3D11ShaderResourceView** textureView,
         _In_opt_ winrt::hstring const& debugName

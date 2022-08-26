@@ -281,7 +281,7 @@ winrt::Windows::Foundation::IAsyncAction MarbleMazeMain::LoadDeferredResourcesAs
         m_vertexShader.put(),
         m_inputLayout.put()
     );
-    winrt::check_hresult(m_vertexShader->SetPrivateData(WKPDID_D3DDebugObjectName, vertexShaderName.size(), vertexShaderName.c_str()));
+    winrt::check_hresult(m_vertexShader->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UINT>(vertexShaderName.size()), vertexShaderName.c_str()));
 
     // create the constant buffer for updating model and camera data.
     D3D11_BUFFER_DESC constantBufferDesc = { 0 };
@@ -301,14 +301,14 @@ winrt::Windows::Foundation::IAsyncAction MarbleMazeMain::LoadDeferredResourcesAs
         )
     );
     std::wstring constantBufferName = L"Constant Buffer created in LoadDeferredResources";
-    winrt::check_hresult(m_constantBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, constantBufferName.size(), constantBufferName.c_str()));
+    winrt::check_hresult(m_constantBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UINT>(constantBufferName.size()), constantBufferName.c_str()));
 
     std::wstring pixelShaderName = L"BasicPixelShader.cso";
     co_await loader.LoadShaderAsync(
         pixelShaderName.c_str(),
         m_pixelShader.put()
     );
-    winrt::check_hresult(m_pixelShader->SetPrivateData(WKPDID_D3DDebugObjectName, pixelShaderName.size(), pixelShaderName.c_str()));
+    winrt::check_hresult(m_pixelShader->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UINT>(pixelShaderName.size()), pixelShaderName.c_str()));
 
     // create the blend state.
     D3D11_BLEND_DESC blendDesc = { 0 };
@@ -328,10 +328,11 @@ winrt::Windows::Foundation::IAsyncAction MarbleMazeMain::LoadDeferredResourcesAs
         )
     );
     std::wstring blendStateName = L"Blend State created in LoadDeferredResources";
-    winrt::check_hresult(m_blendState->SetPrivateData(WKPDID_D3DDebugObjectName, blendStateName.size(), blendStateName.c_str()));
+    winrt::check_hresult(m_blendState->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UINT>(blendStateName.size()), blendStateName.c_str()));
 
     // create the sampler
     D3D11_SAMPLER_DESC samplerDesc;
+    ZeroMemory(&samplerDesc, sizeof(samplerDesc));
     samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
     samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
     samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -354,7 +355,7 @@ winrt::Windows::Foundation::IAsyncAction MarbleMazeMain::LoadDeferredResourcesAs
         )
     );
     std::wstring samplerName = L"Sampler created in LoadDeferredResources";
-    winrt::check_hresult(m_sampler->SetPrivateData(WKPDID_D3DDebugObjectName, samplerName.size(), samplerName.c_str()));
+    winrt::check_hresult(m_sampler->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UINT>(samplerName.size()), samplerName.c_str()));
 
     // Load the meshes.
     winrt::check_hresult(
@@ -932,6 +933,7 @@ void MarbleMazeMain::Update()
         gravity = XMVector3Normalize(gravity);
 
         XMFLOAT3A g;
+        ZeroMemory(&g, sizeof(g));
         XMStoreFloat3(&g, gravity);
         m_physics.SetGravity(g);
 
