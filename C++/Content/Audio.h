@@ -16,12 +16,12 @@ static const int MAX_BUFFER_COUNT = 3;
 
 enum SoundEvent
 {
-    RollingEvent        = 0,
-    FallingEvent        = 1,
-    CollisionEvent      = 2,
-    CheckpointEvent     = 3,
-    MenuChangeEvent     = 4,
-    MenuSelectedEvent   = 5,
+    RollingEvent = 0,
+    FallingEvent = 1,
+    CollisionEvent = 2,
+    CheckpointEvent = 3,
+    MenuChangeEvent = 4,
+    MenuSelectedEvent = 5,
     LastSoundEvent,
 };
 
@@ -46,9 +46,9 @@ struct SoundEffectData
 
 struct StreamingVoiceContext : public IXAudio2VoiceCallback
 {
-    STDMETHOD_(void, OnVoiceProcessingPassStart)(uint32_t){}
-    STDMETHOD_(void, OnVoiceProcessingPassEnd)(){}
-    STDMETHOD_(void, OnStreamEnd)(){}
+    STDMETHOD_(void, OnVoiceProcessingPassStart)(uint32_t) {}
+    STDMETHOD_(void, OnVoiceProcessingPassEnd)() {}
+    STDMETHOD_(void, OnStreamEnd)() {}
     STDMETHOD_(void, OnBufferStart)(void*)
     {
         ResetEvent(hBufferEndEvent);
@@ -60,8 +60,8 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
             SetEvent(hBufferEndEvent);
         }
     }
-    STDMETHOD_(void, OnLoopEnd)(void*){}
-    STDMETHOD_(void, OnVoiceError)(void*, HRESULT){}
+    STDMETHOD_(void, OnLoopEnd)(void*) {}
+    STDMETHOD_(void, OnVoiceError)(void*, HRESULT) {}
 
     HANDLE hBufferEndEvent;
     StreamingVoiceContext() : hBufferEndEvent(CreateEventEx(NULL, FALSE, FALSE, NULL))
@@ -82,10 +82,10 @@ public:
     void Initialize(Audio* audio);
 
     // Called by XAudio2 just before an audio processing pass begins.
-    void _stdcall OnProcessingPassStart(){};
+    void _stdcall OnProcessingPassStart() {};
 
     // Called just after an audio processing pass ends.
-    void  _stdcall OnProcessingPassEnd(){};
+    void  _stdcall OnProcessingPassEnd() {};
 
     // Called when a critical system error causes XAudio2
     // to be closed and restarted. The error code is given in Error.

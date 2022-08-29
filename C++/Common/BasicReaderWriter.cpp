@@ -21,7 +21,7 @@ BasicReaderWriter::BasicReaderWriter()
 
 BasicReaderWriter::BasicReaderWriter(
     _In_ winrt::Windows::Storage::StorageFolder folder
-    )
+)
     : m_location(std::move(folder))
 {
     winrt::hstring path = m_location.Path();
@@ -37,7 +37,7 @@ BasicReaderWriter::BasicReaderWriter(
 
 std::vector<byte> BasicReaderWriter::ReadData(
     _In_ winrt::hstring const& filename
-    )
+)
 {
     CREATEFILE2_EXTENDED_PARAMETERS extendedParams = { 0 };
     extendedParams.dwSize = sizeof(CREATEFILE2_EXTENDED_PARAMETERS);
@@ -68,7 +68,7 @@ std::vector<byte> BasicReaderWriter::ReadData(
         FileStandardInfo,
         &fileInfo,
         sizeof(fileInfo)
-        ))
+    ))
     {
         winrt::throw_hresult(E_FAIL);
     }
@@ -86,7 +86,7 @@ std::vector<byte> BasicReaderWriter::ReadData(
         (DWORD)fileData.size(),
         nullptr,
         nullptr
-        ))
+    ))
     {
         winrt::throw_hresult(E_FAIL);
     }
@@ -96,7 +96,7 @@ std::vector<byte> BasicReaderWriter::ReadData(
 
 winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::Streams::IBuffer> BasicReaderWriter::ReadDataAsync(
     _In_ winrt::hstring const& filename
-    )
+)
 {
     StorageFile file{ co_await m_location.GetFileAsync(filename) };
     co_return co_await FileIO::ReadBufferAsync(file);
@@ -105,7 +105,7 @@ winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::Streams::IB
 uint32_t BasicReaderWriter::WriteData(
     _In_ winrt::hstring const& filename,
     _In_ std::vector<byte> const& fileData
-    )
+)
 {
     CREATEFILE2_EXTENDED_PARAMETERS extendedParams = { 0 };
     extendedParams.dwSize = sizeof(CREATEFILE2_EXTENDED_PARAMETERS);
@@ -138,7 +138,7 @@ uint32_t BasicReaderWriter::WriteData(
             (DWORD)fileData.size(),
             &numBytesWritten,
             nullptr
-            ) ||
+        ) ||
         numBytesWritten != fileData.size()
         )
     {
@@ -151,7 +151,7 @@ uint32_t BasicReaderWriter::WriteData(
 winrt::Windows::Foundation::IAsyncAction BasicReaderWriter::WriteDataAsync(
     _In_ winrt::hstring const& filename,
     _In_ std::vector<byte> const& fileData
-    )
+)
 {
     StorageFile file{ co_await m_location.CreateFileAsync(filename, CreationCollisionOption::ReplaceExisting) };
     co_await FileIO::WriteBytesAsync(file, fileData);

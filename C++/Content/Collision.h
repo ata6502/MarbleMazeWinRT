@@ -46,7 +46,7 @@ struct Contact
 
     FORCEINLINE DirectX::XMVECTOR GetSurfaceNormal() const
     {
-        return XMLoadFloat3((DirectX::XMFLOAT3*) &plane);
+        return XMLoadFloat3((DirectX::XMFLOAT3*)&plane);
     }
 
     BOOL IsColliding() const
@@ -99,5 +99,5 @@ private:
         DirectX::FXMVECTOR path,
         MeshID mesh,
         const std::vector<Triangle>& triList
-        );
+    );
 };

@@ -69,7 +69,7 @@ namespace MarbleMaze
         // IDeviceNotify
         virtual void OnDeviceLost();
         virtual void OnDeviceRestored();
-        
+
         void CreateWindowSizeDependentResources();
         void Run();
 
@@ -84,7 +84,7 @@ namespace MarbleMaze
         void KeyDown(winrt::Windows::System::VirtualKey key);
         void KeyUp(winrt::Windows::System::VirtualKey key);
         void OnFocusChange(bool active);
-        bool IsDeferredLoadReady() {return m_deferredResourcesReady;}
+        bool IsDeferredLoadReady() { return m_deferredResourcesReady; }
         void SetWindowVisibility(bool visible);
         void SetWindowClosed();
 
@@ -147,7 +147,7 @@ namespace MarbleMaze
         bool                                                m_deferredResourcesReady;
         PersistentState                                     m_persistentState;
 
-		// Input
+        // Input
         std::vector<winrt::Windows::Gaming::Input::Gamepad> m_myGamepads;
         winrt::Windows::Gaming::Input::Gamepad              m_gamepad{ nullptr };
         winrt::Windows::Gaming::Input::GamepadReading       m_newReading;

@@ -69,7 +69,7 @@ BOOL Collision::AccumulateSphereTriangleIntersections(
     FXMVECTOR path,
     MeshID mesh,
     const std::vector<Triangle>& triList
-    )
+)
 {
     size_t triCount = triList.size();
 
@@ -246,7 +246,7 @@ void Collision::MergeSharedEdgeCoplanarContacts(FXMVECTOR sphere, FXMVECTOR radi
 // Push the sphere out of the surface along its surface normal until it is just touching.
 XMVECTOR Contact::Resolve(FXMVECTOR position, [[maybe_unused]] FXMVECTOR radius)
 {
-    XMVECTOR N = XMLoadFloat3((XMFLOAT3*) &plane);
+    XMVECTOR N = XMLoadFloat3((XMFLOAT3*)&plane);
     return position - (penetrationDistance * N);
 }
 

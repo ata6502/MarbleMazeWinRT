@@ -100,6 +100,6 @@ namespace DX
         DirectX::XMFLOAT4X4                                             m_orientationTransform3D;
 
         // The IDeviceNotify can be held directly as it owns the DeviceResources.
-        IDeviceNotify*                                                  m_deviceNotify;
+        IDeviceNotify* m_deviceNotify;
     };
 }

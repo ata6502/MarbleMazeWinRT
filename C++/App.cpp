@@ -117,7 +117,7 @@ struct App : winrt::implements<App, IFrameworkViewSource, IFrameworkView>
 #endif //_DEGBUG
     }
 
-    #pragma region Application lifecycle event handlers
+#pragma region Application lifecycle event handlers
 
     void OnActivated([[maybe_unused]] CoreApplicationView const& applicationView, [[maybe_unused]] IActivatedEventArgs const& args)
     {
@@ -151,9 +151,9 @@ struct App : winrt::implements<App, IFrameworkViewSource, IFrameworkView>
         // does not occur if the app was previously terminated.
         m_main->OnResuming();
     }
-    #pragma endregion
+#pragma endregion
 
-    #pragma region Window event handlers
+#pragma region Window event handlers
 
     void OnWindowActivationChanged([[maybe_unused]] CoreWindow const& sender, WindowActivatedEventArgs const& args)
     {
@@ -179,13 +179,15 @@ struct App : winrt::implements<App, IFrameworkViewSource, IFrameworkView>
         m_main->SetWindowVisibility(args.Visible());
     }
 
+    // The CoreWindow::Closed event is not invoked when the window is closed.
+    // Bug report: https://github.com/microsoft/XboxGameBarSamples/issues/62
     void OnWindowClosed([[maybe_unused]] CoreWindow const& sender, [[maybe_unused]] CoreWindowEventArgs const& args)
     {
         m_main->SetWindowClosed();
     }
-    #pragma endregion
+#pragma endregion
 
-    #pragma region Pointer event handlers
+#pragma region Pointer event handlers
 
     void OnPointerPressed([[maybe_unused]] CoreWindow const& sender, PointerEventArgs const& args)
     {
@@ -201,9 +203,9 @@ struct App : winrt::implements<App, IFrameworkViewSource, IFrameworkView>
     {
         m_main->UpdateTouch(args.CurrentPoint().PointerId(), args.CurrentPoint().Position());
     }
-    #pragma endregion
+#pragma endregion
 
-    #pragma region Keyboard event handlers
+#pragma region Keyboard event handlers
 
     void OnKeyDown([[maybe_unused]] CoreWindow const& sender, KeyEventArgs const& args)
     {
@@ -222,10 +224,10 @@ struct App : winrt::implements<App, IFrameworkViewSource, IFrameworkView>
         }
 #endif // _DEBUG
     }
-    #pragma endregion
+#pragma endregion
 
-    #pragma region Display information event handlers
- 
+#pragma region Display information event handlers
+
     void OnDpiChanged(DisplayInformation const& sender, [[maybe_unused]] IInspectable const& args)
     {
         m_deviceResources->SetDpi(sender.LogicalDpi());
@@ -242,7 +244,7 @@ struct App : winrt::implements<App, IFrameworkViewSource, IFrameworkView>
     {
         m_deviceResources->ValidateDevice();
     }
-    #pragma endregion
+#pragma endregion
 
 private:
     std::shared_ptr<DX::DeviceResources> m_deviceResources;

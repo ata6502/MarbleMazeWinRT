@@ -25,7 +25,7 @@ namespace ScreenRotation
         0.0f, 1.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 1.0f
-        );
+    );
 
     // 90-degree Z-rotation
     static const XMFLOAT4X4 Rotation90(
@@ -33,7 +33,7 @@ namespace ScreenRotation
         -1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 1.0f
-        );
+    );
 
     // 180-degree Z-rotation
     static const XMFLOAT4X4 Rotation180(
@@ -41,7 +41,7 @@ namespace ScreenRotation
         0.0f, -1.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 1.0f
-        );
+    );
 
     // 270-degree Z-rotation
     static const XMFLOAT4X4 Rotation270(
@@ -49,7 +49,7 @@ namespace ScreenRotation
         1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 1.0f
-        );
+    );
 };
 
 // Constructor for DeviceResources.
@@ -195,7 +195,7 @@ void DeviceResources::CreateDeviceResources()
 void DeviceResources::CreateWindowSizeDependentResources()
 {
     // Clear the previous window size specific context.
-    ID3D11RenderTargetView* nullViews [] = { nullptr };
+    ID3D11RenderTargetView* nullViews[] = { nullptr };
     m_d3dContext->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
     m_d3dRenderTargetView = nullptr;
     m_d2dContext->SetTarget(nullptr);
@@ -544,7 +544,7 @@ void DeviceResources::HandleDeviceLost()
     m_d2dDevice = nullptr;
 
     m_d3dContext->Flush();
-    
+
     // Create the new device and swap chain.
     CreateDeviceResources();
     m_d2dContext->SetDpi(m_dpi, m_dpi);
@@ -558,7 +558,7 @@ void DeviceResources::HandleDeviceLost()
 }
 
 // Register our DeviceNotify to be informed on device lost and creation.
-void DeviceResources::RegisterDeviceNotify(DX::IDeviceNotify *deviceNotify)
+void DeviceResources::RegisterDeviceNotify(DX::IDeviceNotify* deviceNotify)
 {
     m_deviceNotify = deviceNotify;
 }

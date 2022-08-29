@@ -52,7 +52,7 @@ public:
         DirectX::CXMVECTOR planeIn,
         BOOL& sharesEdgeOut,
         BOOL& coplanar
-        ) const
+    ) const
     {
         using namespace DirectX;
 
@@ -61,9 +61,9 @@ public:
             XMVectorOrInt(
                 XMVectorEqual(V0, VA),
                 XMVectorEqual(V1, VA)
-                ),
+            ),
             XMVectorEqual(V2, VA)
-            );
+        );
         const XMVECTOR VB = XMLoadFloat3(&B);
         sharesEdge = XMVectorOrInt(
             sharesEdge,
@@ -71,10 +71,10 @@ public:
                 XMVectorOrInt(
                     XMVectorEqual(V0, VB),
                     XMVectorEqual(V1, VB)
-                    ),
+                ),
                 XMVectorEqual(V2, VB)
-                )
-            );
+            )
+        );
         const XMVECTOR VC = XMLoadFloat3(&C);
         sharesEdge = XMVectorOrInt(
             sharesEdge,
@@ -82,10 +82,10 @@ public:
                 XMVectorOrInt(
                     XMVectorEqual(V0, VC),
                     XMVectorEqual(V1, VC)
-                    ),
+                ),
                 XMVectorEqual(V2, VC)
-                )
-            );
+            )
+        );
 
         sharesEdgeOut = XMVector3EqualInt(sharesEdge, XMVectorTrueInt());
 

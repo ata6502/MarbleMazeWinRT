@@ -28,7 +28,7 @@ struct BasicVertex
 BasicLoader::BasicLoader(
     _In_ winrt::com_ptr<ID3D11Device3> d3dDevice,
     _In_opt_ IWICImagingFactory2* wicFactory
-    ) :
+) :
     m_d3dDevice(std::move(d3dDevice))
 {
     m_wicFactory.copy_from(wicFactory);
@@ -38,7 +38,7 @@ template <class DeviceChildType>
 inline void BasicLoader::SetDebugName(
     _In_ DeviceChildType* object,
     _In_ winrt::hstring const& name
-    )
+)
 {
 #if defined(_DEBUG)
     // Only assign debug names in debug builds.
@@ -53,7 +53,7 @@ inline void BasicLoader::SetDebugName(
         1024,
         nullptr,
         nullptr
-        );
+    );
 
     if (nameStringLength == 0)
     {
@@ -63,8 +63,8 @@ inline void BasicLoader::SetDebugName(
                 WKPDID_D3DDebugObjectName,
                 sizeof(defaultNameString) - 1,
                 defaultNameString
-                )
-            );
+            )
+        );
     }
     else
     {
@@ -73,15 +73,15 @@ inline void BasicLoader::SetDebugName(
                 WKPDID_D3DDebugObjectName,
                 nameStringLength - 1,
                 nameString
-                )
-            );
+            )
+        );
     }
 #endif
 }
 
 std::wstring BasicLoader::GetExtension(
     _In_ winrt::hstring const& filename
-    )
+)
 {
     std::wstring extension;
     auto lastDot = std::find(filename.rbegin(), filename.rend(), L'.');
@@ -100,7 +100,7 @@ void BasicLoader::CreateTexture(
     _Out_opt_ ID3D11Texture2D** texture,
     _Out_opt_ ID3D11ShaderResourceView** textureView,
     _In_opt_ winrt::hstring const& debugName
-    )
+)
 {
     winrt::com_ptr<ID3D11ShaderResourceView> shaderResourceView;
     winrt::com_ptr<ID3D11Texture2D> texture2D;
@@ -117,7 +117,7 @@ void BasicLoader::CreateTexture(
                 dataSize,
                 resource.put(),
                 nullptr
-                );
+            );
         }
         else
         {
@@ -127,7 +127,7 @@ void BasicLoader::CreateTexture(
                 dataSize,
                 resource.put(),
                 shaderResourceView.put()
-                );
+            );
         }
 
         texture2D = resource.as<ID3D11Texture2D>();
@@ -145,8 +145,8 @@ void BasicLoader::CreateTexture(
                     nullptr,
                     CLSCTX_INPROC_SERVER,
                     IID_PPV_ARGS(&m_wicFactory)
-                    )
-                );
+                )
+            );
         }
 
         winrt::com_ptr<IWICStream> stream;
@@ -168,18 +168,18 @@ void BasicLoader::CreateTexture(
                 nullptr,
                 WICDecodeMetadataCacheOnDemand,
                 bitmapDecoder.put()
-                )
-            );
+            )
+        );
 
         winrt::com_ptr<IWICBitmapFrameDecode> bitmapFrame;
         winrt::check_hresult(
             bitmapDecoder->GetFrame(0, bitmapFrame.put())
-            );
+        );
 
         winrt::com_ptr<IWICFormatConverter> formatConverter;
         winrt::check_hresult(
             m_wicFactory->CreateFormatConverter(formatConverter.put())
-            );
+        );
 
         winrt::check_hresult(
             formatConverter->Initialize(
@@ -189,14 +189,14 @@ void BasicLoader::CreateTexture(
                 nullptr,
                 0.0,
                 WICBitmapPaletteTypeCustom
-                )
-            );
+            )
+        );
 
         uint32_t width = 0;
         uint32_t height = 0;
         winrt::check_hresult(
             bitmapFrame->GetSize(&width, &height)
-            );
+        );
 
         std::unique_ptr<byte[]> bitmapPixels(new byte[width * height * 4]);
         winrt::check_hresult(
@@ -205,8 +205,8 @@ void BasicLoader::CreateTexture(
                 width * 4,
                 width * height * 4,
                 bitmapPixels.get()
-                )
-            );
+            )
+        );
 
         D3D11_SUBRESOURCE_DATA initialData;
         ZeroMemory(&initialData, sizeof(initialData));
@@ -220,30 +220,30 @@ void BasicLoader::CreateTexture(
             height,
             1,
             1
-            );
+        );
 
         winrt::check_hresult(
             m_d3dDevice->CreateTexture2D(
                 &textureDesc,
                 &initialData,
                 texture2D.put()
-                )
-            );
+            )
+        );
 
         if (textureView != nullptr)
         {
             CD3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc(
                 texture2D.get(),
                 D3D11_SRV_DIMENSION_TEXTURE2D
-                );
+            );
 
             winrt::check_hresult(
                 m_d3dDevice->CreateShaderResourceView(
                     texture2D.get(),
                     &shaderResourceViewDesc,
                     shaderResourceView.put()
-                    )
-                );
+                )
+            );
         }
     }
 
@@ -265,7 +265,7 @@ void BasicLoader::CreateInputLayout(
     _In_reads_opt_(layoutDescNumElements) const D3D11_INPUT_ELEMENT_DESC* layoutDesc,
     _In_ uint32_t layoutDescNumElements,
     _Out_ ID3D11InputLayout** layout
-    )
+)
 {
     if (layoutDesc == nullptr)
     {
@@ -284,8 +284,8 @@ void BasicLoader::CreateInputLayout(
                 bytecode,
                 bytecodeSize,
                 layout
-                )
-            );
+            )
+        );
     }
     else
     {
@@ -296,8 +296,8 @@ void BasicLoader::CreateInputLayout(
                 bytecode,
                 bytecodeSize,
                 layout
-                )
-            );
+            )
+        );
     }
 }
 
@@ -308,7 +308,7 @@ void BasicLoader::CreateMesh(
     _Out_opt_ uint32_t* vertexCount,
     _Out_opt_ uint32_t* indexCount,
     _In_opt_ winrt::hstring const& debugName
-    )
+)
 {
     // The first 4 bytes of the BasicMesh format define the number of vertices in the mesh.
     uint32_t numVertices = *reinterpret_cast<uint32_t*>(meshData);
@@ -369,7 +369,7 @@ void BasicLoader::LoadTexture(
     _In_ winrt::hstring const& filename,
     _Out_opt_ ID3D11Texture2D** texture,
     _Out_opt_ ID3D11ShaderResourceView** textureView
-    )
+)
 {
     auto textureData{ m_basicReaderWriter.ReadData(filename) };
 
@@ -387,7 +387,7 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadTextureAsync(
     _In_ winrt::hstring filename,
     _Out_opt_ ID3D11Texture2D** texture,
     _Out_opt_ ID3D11ShaderResourceView** textureView
-    )
+)
 {
     IBuffer textureData = co_await m_basicReaderWriter.ReadDataAsync(filename);
     CreateTexture(
@@ -397,7 +397,7 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadTextureAsync(
         texture,
         textureView,
         filename
-        );
+    );
 }
 
 void BasicLoader::LoadShader(
@@ -406,7 +406,7 @@ void BasicLoader::LoadShader(
     _In_ uint32_t layoutDescNumElements,
     _Out_ ID3D11VertexShader** shader,
     _Out_opt_ ID3D11InputLayout** layout
-    )
+)
 {
     std::vector<byte> bytecode{ m_basicReaderWriter.ReadData(filename) };
 
@@ -416,8 +416,8 @@ void BasicLoader::LoadShader(
             bytecode.size(),
             nullptr,
             shader
-            )
-        );
+        )
+    );
 
     if (*shader)
         SetDebugName(*shader, filename);
@@ -443,7 +443,7 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
     _In_ uint32_t layoutDescNumElements,
     _Out_ ID3D11VertexShader** shader,
     _Out_opt_ ID3D11InputLayout** layout
-    )
+)
 {
     // This method assumes that the lifetime of input arguments may be shorter
     // than the duration of this operation. In order to ensure accurate results, a
@@ -474,8 +474,8 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
             bytecode.Length(),
             nullptr,
             shader
-            )
-        );
+        )
+    );
 
     SetDebugName(*shader, filename);
 
@@ -487,7 +487,7 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
             layoutDesc == nullptr ? nullptr : layoutDescCopy.data(),
             layoutDescNumElements,
             layout
-            );
+        );
 
         if (*layout)
             SetDebugName(*layout, filename);
@@ -497,7 +497,7 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
 void BasicLoader::LoadShader(
     _In_ winrt::hstring const& filename,
     _Out_ ID3D11PixelShader** shader
-    )
+)
 {
     std::vector<byte> bytecode{ m_basicReaderWriter.ReadData(filename) };
 
@@ -507,8 +507,8 @@ void BasicLoader::LoadShader(
             bytecode.size(),
             nullptr,
             shader
-            )
-        );
+        )
+    );
 
     if (*shader)
         SetDebugName(*shader, filename);
@@ -517,7 +517,7 @@ void BasicLoader::LoadShader(
 winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
     _In_ winrt::hstring filename,
     _Out_ ID3D11PixelShader** shader
-    )
+)
 {
     IBuffer bytecode = co_await m_basicReaderWriter.ReadDataAsync(filename);
 
@@ -527,8 +527,8 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
             bytecode.Length(),
             nullptr,
             shader
-            )
-        );
+        )
+    );
 
     if (*shader)
         SetDebugName(*shader, filename);
@@ -537,7 +537,7 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
 void BasicLoader::LoadShader(
     _In_ winrt::hstring const& filename,
     _Out_ ID3D11ComputeShader** shader
-    )
+)
 {
     std::vector<byte> bytecode{ m_basicReaderWriter.ReadData(filename) };
 
@@ -547,8 +547,8 @@ void BasicLoader::LoadShader(
             bytecode.size(),
             nullptr,
             shader
-            )
-        );
+        )
+    );
 
     if (*shader)
         SetDebugName(*shader, filename);
@@ -557,7 +557,7 @@ void BasicLoader::LoadShader(
 winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
     _In_ winrt::hstring filename,
     _Out_ ID3D11ComputeShader** shader
-    )
+)
 {
     IBuffer bytecode = co_await m_basicReaderWriter.ReadDataAsync(filename);
 
@@ -567,8 +567,8 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
             bytecode.Length(),
             nullptr,
             shader
-            )
-        );
+        )
+    );
 
     if (*shader)
         SetDebugName(*shader, filename);
@@ -577,7 +577,7 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
 void BasicLoader::LoadShader(
     _In_ winrt::hstring const& filename,
     _Out_ ID3D11GeometryShader** shader
-    )
+)
 {
     std::vector<byte> bytecode{ m_basicReaderWriter.ReadData(filename) };
 
@@ -587,8 +587,8 @@ void BasicLoader::LoadShader(
             bytecode.size(),
             nullptr,
             shader
-            )
-        );
+        )
+    );
 
     if (*shader)
         SetDebugName(*shader, filename);
@@ -597,7 +597,7 @@ void BasicLoader::LoadShader(
 winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
     _In_ winrt::hstring filename,
     _Out_ ID3D11GeometryShader** shader
-    )
+)
 {
     IBuffer bytecode = co_await m_basicReaderWriter.ReadDataAsync(filename);
 
@@ -607,8 +607,8 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
             bytecode.Length(),
             nullptr,
             shader
-            )
-        );
+        )
+    );
 
     if (*shader)
         SetDebugName(*shader, filename);
@@ -622,7 +622,7 @@ void BasicLoader::LoadShader(
     _In_ uint32_t numStrides,
     _In_ uint32_t rasterizedStream,
     _Out_ ID3D11GeometryShader** shader
-    )
+)
 {
     std::vector<byte> bytecode{ m_basicReaderWriter.ReadData(filename) };
 
@@ -637,8 +637,8 @@ void BasicLoader::LoadShader(
             rasterizedStream,
             nullptr,
             shader
-            )
-        );
+        )
+    );
 
     if (*shader)
         SetDebugName(*shader, filename);
@@ -652,7 +652,7 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
     _In_ uint32_t numStrides,
     _In_ uint32_t rasterizedStream,
     _Out_ ID3D11GeometryShader** shader
-    )
+)
 {
     // This method assumes that the lifetime of input arguments may be shorter
     // than the duration of this coroutine. In order to ensure accurate results, a
@@ -696,8 +696,8 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
             rasterizedStream,
             nullptr,
             shader
-            )
-        );
+        )
+    );
 
     if (*shader)
         SetDebugName(*shader, filename);
@@ -706,7 +706,7 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
 void BasicLoader::LoadShader(
     _In_ winrt::hstring const& filename,
     _Out_ ID3D11HullShader** shader
-    )
+)
 {
     std::vector<byte> bytecode{ m_basicReaderWriter.ReadData(filename) };
 
@@ -726,7 +726,7 @@ void BasicLoader::LoadShader(
 winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
     _In_ winrt::hstring filename,
     _Out_ ID3D11HullShader** shader
-    )
+)
 {
     IBuffer bytecode = co_await m_basicReaderWriter.ReadDataAsync(filename);
 
@@ -746,7 +746,7 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
 void BasicLoader::LoadShader(
     _In_ winrt::hstring const& filename,
     _Out_ ID3D11DomainShader** shader
-    )
+)
 {
     std::vector<byte> bytecode{ m_basicReaderWriter.ReadData(filename) };
 
@@ -766,7 +766,7 @@ void BasicLoader::LoadShader(
 winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadShaderAsync(
     _In_ winrt::hstring filename,
     _Out_ ID3D11DomainShader** shader
-    )
+)
 {
     IBuffer bytecode = co_await m_basicReaderWriter.ReadDataAsync(filename);
 
@@ -789,7 +789,7 @@ void BasicLoader::LoadMesh(
     _Out_ ID3D11Buffer** indexBuffer,
     _Out_opt_ uint32_t* vertexCount,
     _Out_opt_ uint32_t* indexCount
-    )
+)
 {
     std::vector<byte> meshData{ m_basicReaderWriter.ReadData(filename) };
 
@@ -809,7 +809,7 @@ winrt::Windows::Foundation::IAsyncAction BasicLoader::LoadMeshAsync(
     _Out_ ID3D11Buffer** indexBuffer,
     _Out_opt_ uint32_t* vertexCount,
     _Out_opt_ uint32_t* indexCount
-    )
+)
 {
     IBuffer meshData = co_await m_basicReaderWriter.ReadDataAsync(filename);
 

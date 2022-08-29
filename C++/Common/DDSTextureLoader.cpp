@@ -277,7 +277,7 @@ static void GetSurfaceInfo(
     _Out_opt_ size_t* outNumBytes,
     _Out_opt_ size_t* outRowBytes,
     _Out_opt_ size_t* outNumRows
-    )
+)
 {
     size_t numBytes = 0;
     size_t rowBytes = 0;
@@ -616,7 +616,7 @@ static void FillInitData(
     _Out_ size_t& tdepth,
     _Out_ size_t& skipMip,
     _Out_writes_(mipCount* arraySize) D3D11_SUBRESOURCE_DATA* initData
-    )
+)
 {
     if (!bitData || !initData)
     {
@@ -715,7 +715,7 @@ static HRESULT CreateD3DResources(
     _In_reads_(mipCount* arraySize) D3D11_SUBRESOURCE_DATA* initData,
     _Outptr_opt_ ID3D11Resource** texture,
     _Outptr_opt_ ID3D11ShaderResourceView** textureView
-    )
+)
 {
     if (!d3dDevice || !initData)
     {
@@ -933,7 +933,7 @@ static void CreateTextureFromDDS(
     _In_ bool forceSRGB,
     _Outptr_opt_ ID3D11Resource** texture,
     _Outptr_opt_ ID3D11ShaderResourceView** textureView
-    )
+)
 {
     HRESULT hr = S_OK;
 
@@ -1183,7 +1183,7 @@ void CreateDDSTextureFromMemory(
     ID3D11ShaderResourceView** textureView,
     size_t maxsize,
     D2D1_ALPHA_MODE* alphaMode
-    )
+)
 {
     return CreateDDSTextureFromMemoryEx(d3dDevice, ddsData, ddsDataSize, maxsize, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0, false, texture, textureView, alphaMode);
 }
@@ -1202,7 +1202,7 @@ void CreateDDSTextureFromMemoryEx(
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
     D2D1_ALPHA_MODE* alphaMode
-    )
+)
 {
     if (texture)
     {

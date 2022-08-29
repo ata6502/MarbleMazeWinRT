@@ -77,7 +77,7 @@ HRESULT SDKMesh::CreateVertexBuffer(ID3D11Device* d3dDevice, SDKMESH_VERTEX_BUFF
     WCHAR objectName[MAX_PATH];
     wcsncpy_s(objectName, MAX_PATH, m_meshName, wcslen(m_meshName));
     wcscat_s(objectName, MAX_PATH, L"_VertexBuffer");
-    hr = header->VertexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT) wcslen(objectName), objectName);
+    hr = header->VertexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)wcslen(objectName), objectName);
 
     return hr;
 }
@@ -104,7 +104,7 @@ HRESULT SDKMesh::CreateIndexBuffer(ID3D11Device* d3dDevice, SDKMESH_INDEX_BUFFER
     WCHAR objectName[MAX_PATH];
     wcsncpy_s(objectName, MAX_PATH, m_meshName, wcslen(m_meshName));
     wcscat_s(objectName, MAX_PATH, L"_IndexBuffer");
-    hr = header->IndexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT) wcslen(objectName), objectName);
+    hr = header->IndexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)wcslen(objectName), objectName);
 
     return hr;
 }
@@ -129,7 +129,7 @@ HRESULT SDKMesh::CreateFromFile(ID3D11Device3* d3dDevice, WCHAR* filename, bool 
             message,
             msgSize,
             nullptr
-            );
+        );
         if ((result > 0) && (result < msgSize))
         {
             OutputDebugString(message);
@@ -153,7 +153,7 @@ HRESULT SDKMesh::CreateFromFile(ID3D11Device3* d3dDevice, WCHAR* filename, bool 
     }
 
     // Get the file size
-    FILE_STANDARD_INFO fileInfo = {0};
+    FILE_STANDARD_INFO fileInfo = { 0 };
     if (!GetFileInformationByHandleEx(m_hFile, FileStandardInfo, &fileInfo, sizeof(fileInfo)))
     {
         winrt::throw_last_error();
@@ -254,7 +254,7 @@ HRESULT SDKMesh::CreateFromMemory(ID3D11Device3* d3dDevice, byte* data, [[maybe_
     uint64_t bufferDataStart = m_meshHeader->HeaderSize + m_meshHeader->NonBufferDataSize;
 
     // Create vertex buffers
-    m_vertices = new byte*[m_meshHeader->NumVertexBuffers];
+    m_vertices = new byte * [m_meshHeader->NumVertexBuffers];
     for (uint32_t i = 0; i < m_meshHeader->NumVertexBuffers; i++)
     {
         byte* vertices = nullptr;
@@ -264,7 +264,7 @@ HRESULT SDKMesh::CreateFromMemory(ID3D11Device3* d3dDevice, byte* data, [[maybe_
     }
 
     // Create index buffers
-    m_indices = new byte*[m_meshHeader->NumIndexBuffers];
+    m_indices = new byte * [m_meshHeader->NumIndexBuffers];
     for (uint32_t i = 0; i < m_meshHeader->NumIndexBuffers; i++)
     {
         byte* indices = nullptr;
@@ -280,19 +280,19 @@ HRESULT SDKMesh::CreateFromMemory(ID3D11Device3* d3dDevice, byte* data, [[maybe_
     }
 
     // Create a place to store our bind pose frame matrices
-    m_bindPoseFrameMatrices = reinterpret_cast<XMMATRIX *>(_aligned_malloc(sizeof(XMMATRIX) * m_meshHeader->NumFrames, 16));
+    m_bindPoseFrameMatrices = reinterpret_cast<XMMATRIX*>(_aligned_malloc(sizeof(XMMATRIX) * m_meshHeader->NumFrames, 16));
     if (!m_bindPoseFrameMatrices)
     {
         goto Error;
     }
 
     // Create a place to store our transformed frame matrices
-    m_transformedFrameMatrices = reinterpret_cast<XMMATRIX *>(_aligned_malloc(sizeof(XMMATRIX) * m_meshHeader->NumFrames, 16));
+    m_transformedFrameMatrices = reinterpret_cast<XMMATRIX*>(_aligned_malloc(sizeof(XMMATRIX) * m_meshHeader->NumFrames, 16));
     if (!m_transformedFrameMatrices)
     {
         goto Error;
     }
-    m_worldPoseFrameMatrices = reinterpret_cast<XMMATRIX *>(_aligned_malloc(sizeof(XMMATRIX) * m_meshHeader->NumFrames, 16));
+    m_worldPoseFrameMatrices = reinterpret_cast<XMMATRIX*>(_aligned_malloc(sizeof(XMMATRIX) * m_meshHeader->NumFrames, 16));
     if (!m_worldPoseFrameMatrices)
     {
         goto Error;
@@ -333,7 +333,7 @@ HRESULT SDKMesh::CreateFromMemory(ID3D11Device3* d3dDevice, byte* data, [[maybe_
             uint32_t* ind = (uint32_t*)m_indices[currentMesh->IndexBuffer];
             float* verts = (float*)m_vertices[currentMesh->VertexBuffers[0]];
             uint32_t stride = (uint32_t)m_vertexBufferArray[currentMesh->VertexBuffers[0]].StrideBytes;
-            assert (stride % 4 == 0);
+            assert(stride % 4 == 0);
             stride /= 4;
             for (uint32_t vertind = indexStart; vertind < indexStart + indexCount; ++vertind)
             {
@@ -556,12 +556,12 @@ void SDKMesh::RenderMesh(uint32_t meshIndex, bool adjacent, ID3D11DeviceContext*
     DXGI_FORMAT indexBufferFormat = DXGI_FORMAT_R16_UINT;
     switch (indexBufferArray[mesh->IndexBuffer].IndexType)
     {
-        case static_cast<uint32_t>(SDKMeshIndexType::Bits16):
-            indexBufferFormat = DXGI_FORMAT_R16_UINT;
-            break;
-        case static_cast<uint32_t>(SDKMeshIndexType::Bits32):
-            indexBufferFormat = DXGI_FORMAT_R32_UINT;
-            break;
+    case static_cast<uint32_t>(SDKMeshIndexType::Bits16):
+        indexBufferFormat = DXGI_FORMAT_R16_UINT;
+        break;
+    case static_cast<uint32_t>(SDKMeshIndexType::Bits32):
+        indexBufferFormat = DXGI_FORMAT_R32_UINT;
+        break;
     };
 
     d3dContext->IASetVertexBuffers(0, mesh->NumVertexBuffers, vertexBuffer, strides, offsets);
@@ -650,7 +650,8 @@ void SDKMesh::RenderFrame(uint32_t frame, bool adjacent, ID3D11DeviceContext* d3
     }
 }
 
-SDKMesh::SDKMesh() : m_numOutstandingResources(0),
+SDKMesh::SDKMesh() : 
+    m_numOutstandingResources(0),
     m_loading(false),
     m_hFile(0),
     m_hFileMappingObject(0),
@@ -729,7 +730,7 @@ HRESULT SDKMesh::LoadAnimation(WCHAR* filename)
     }
 
     if (!ReadFile(fileHandle, m_animationData, static_cast<DWORD>(sizeof(SDKANIMATION_FILE_HEADER) + fileHeader.AnimationDataSize),
-            &bytesRead, nullptr))
+        &bytesRead, nullptr))
     {
         goto Error;
     }
@@ -896,33 +897,33 @@ D3D11_PRIMITIVE_TOPOLOGY SDKMesh::GetPrimitiveType(SDKMeshPrimitiveType primitiv
 
     switch (primitiveType)
     {
-        case SDKMeshPrimitiveType::TriangleList:
-            returnType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-            break;
-        case SDKMeshPrimitiveType::TriangleStrip:
-            returnType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-            break;
-        case SDKMeshPrimitiveType::LineList:
-            returnType = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
-            break;
-        case SDKMeshPrimitiveType::LineStrip:
-            returnType = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
-            break;
-        case SDKMeshPrimitiveType::PointList:
-            returnType = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
-            break;
-        case SDKMeshPrimitiveType::TriangleListAdjacent:
-            returnType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ;
-            break;
-        case SDKMeshPrimitiveType::TriangleStripAdjacent:
-            returnType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP_ADJ;
-            break;
-        case SDKMeshPrimitiveType::LineListAdjacent:
-            returnType = D3D11_PRIMITIVE_TOPOLOGY_LINELIST_ADJ;
-            break;
-        case SDKMeshPrimitiveType::LineStripAdjacent:
-            returnType = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP_ADJ;
-            break;
+    case SDKMeshPrimitiveType::TriangleList:
+        returnType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+        break;
+    case SDKMeshPrimitiveType::TriangleStrip:
+        returnType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+        break;
+    case SDKMeshPrimitiveType::LineList:
+        returnType = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+        break;
+    case SDKMeshPrimitiveType::LineStrip:
+        returnType = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
+        break;
+    case SDKMeshPrimitiveType::PointList:
+        returnType = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+        break;
+    case SDKMeshPrimitiveType::TriangleListAdjacent:
+        returnType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ;
+        break;
+    case SDKMeshPrimitiveType::TriangleStripAdjacent:
+        returnType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP_ADJ;
+        break;
+    case SDKMeshPrimitiveType::LineListAdjacent:
+        returnType = D3D11_PRIMITIVE_TOPOLOGY_LINELIST_ADJ;
+        break;
+    case SDKMeshPrimitiveType::LineStripAdjacent:
+        returnType = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP_ADJ;
+        break;
     };
 
     return returnType;
@@ -932,10 +933,10 @@ DXGI_FORMAT SDKMesh::GetIndexBufferFormat(uint32_t mesh)
 {
     switch (m_indexBufferArray[m_meshArray[mesh].IndexBuffer].IndexType)
     {
-        case static_cast<uint32_t>(SDKMeshIndexType::Bits16):
-            return DXGI_FORMAT_R16_UINT;
-        case static_cast<uint32_t>(SDKMeshIndexType::Bits32):
-            return DXGI_FORMAT_R32_UINT;
+    case static_cast<uint32_t>(SDKMeshIndexType::Bits16):
+        return DXGI_FORMAT_R16_UINT;
+    case static_cast<uint32_t>(SDKMeshIndexType::Bits32):
+        return DXGI_FORMAT_R32_UINT;
     };
 
     return DXGI_FORMAT_R16_UINT;

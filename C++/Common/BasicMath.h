@@ -145,7 +145,7 @@ template <class T> struct Matrix4x4
         T i21, T i22, T i23, T i24,
         T i31, T i32, T i33, T i34,
         T i41, T i42, T i43, T i44
-        )
+    )
     {
         _11 = i11; _12 = i12; _13 = i13; _14 = i14;
         _21 = i21; _22 = i22; _23 = i23; _24 = i24;
@@ -155,7 +155,7 @@ template <class T> struct Matrix4x4
 
     T* operator[](unsigned int index)
     {
-        return &(reinterpret_cast<T*>(this)[index*4]);
+        return &(reinterpret_cast<T*>(this)[index * 4]);
     }
 };
 #pragma warning(pop)
@@ -201,7 +201,7 @@ T length(Vector4<T> a)
 template <class T>
 Vector3<T> cross(Vector3<T> a, Vector3<T> b)
 {
-    return Vector3<T>((a.y*b.z)-(a.z*b.y), (a.z*b.x)-(a.x*b.z), (a.x*b.y)-(a.y*b.x));
+    return Vector3<T>((a.y * b.z) - (a.z * b.y), (a.z * b.x) - (a.x * b.z), (a.x * b.y) - (a.y * b.x));
 }
 
 template <class T>

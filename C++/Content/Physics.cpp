@@ -86,7 +86,7 @@ void Physics::IntegrateSimulation(float deltaT)
 
     // Calculate new velocity due to acceleration for the time-slice.
 
-    XMVECTOR velDueToAccel =  acceleration * deltaTime;
+    XMVECTOR velDueToAccel = acceleration * deltaTime;
     XMStoreFloat3(&m_velDueToAccel, velDueToAccel);
     velocity = velocity + velDueToAccel;
 
@@ -191,7 +191,7 @@ void Physics::HandleCollisions(float deltaT)
             XMVECTOR accelSurface = XMVectorSelect(XMVectorZero(), -ADotN, select);
 
             // Handle friction
-            XMVECTOR frictionResponse =  accelSurface * wallFrictionCoeff * deltaTime;
+            XMVECTOR frictionResponse = accelSurface * wallFrictionCoeff * deltaTime;
             velocity = velocity - velocityDir * XMVectorMin(speed, frictionResponse);
 
             maxRollingSpeed = XMVectorMax(XMVector3LengthSq(velocityDir * velocity), maxRollingSpeed);
@@ -202,7 +202,7 @@ void Physics::HandleCollisions(float deltaT)
         else
         {
             // Elastic collision - reflect our velocity in the direction of the normal.
-            float negRestitutionScalar = - (1.0f + WallRestitutionCoefficient);
+            float negRestitutionScalar = -(1.0f + WallRestitutionCoefficient);
             XMVECTOR negRestitution = XMVectorReplicate(negRestitutionScalar);
 
             // Keep track of max collision speed for the audio sim.
@@ -235,23 +235,23 @@ void Physics::CalculateCurrentRoomSize()
 {
 #if !defined(DISABLE_RAYCAST_REVERB)
     static bool squarePattern = true;
-    float wallDistances[4] = {FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX};
+    float wallDistances[4] = { FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX };
     XMVECTOR position = XMLoadFloat3(&m_position);
     size_t triCount = m_collision->m_wallTriList.size();
     XMVECTOR rayDirections[4];
     if (squarePattern)
     {
-        rayDirections[0] = XMVectorSet( 0.0f,  1.0f, 0.0f, 0.0f);    // North
-        rayDirections[1] = XMVectorSet( 0.0f, -1.0f, 0.0f, 0.0f);    // South
-        rayDirections[2] = XMVectorSet(-1.0f,  0.0f, 0.0f, 0.0f);    // East
-        rayDirections[3] = XMVectorSet( 1.0f,  0.0f, 0.0f, 0.0f);    // West
+        rayDirections[0] = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);    // North
+        rayDirections[1] = XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f);   // South
+        rayDirections[2] = XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f);   // East
+        rayDirections[3] = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);    // West
     }
     else
     {
-        rayDirections[0] = XMVectorSet( 0.5f, -0.5f, 0.0f, 0.0f);    // NE
-        rayDirections[1] = XMVectorSet( 0.5f,  0.5f, 0.0f, 0.0f);    // NW
-        rayDirections[2] = XMVectorSet(-0.5f, -0.5f, 0.0f, 0.0f);    // SE
-        rayDirections[3] = XMVectorSet(-0.5f,  0.5f, 0.0f, 0.0f);    // SW
+        rayDirections[0] = XMVectorSet(0.5f, -0.5f, 0.0f, 0.0f);   // NE
+        rayDirections[1] = XMVectorSet(0.5f, 0.5f, 0.0f, 0.0f);    // NW
+        rayDirections[2] = XMVectorSet(-0.5f, -0.5f, 0.0f, 0.0f);  // SE
+        rayDirections[3] = XMVectorSet(-0.5f, 0.5f, 0.0f, 0.0f);   // SW
     }
     float distance = 0.0f;
 
@@ -278,11 +278,11 @@ void Physics::CalculateCurrentRoomSize()
 
     if (squarePattern)
     {
-        memcpy(&m_wallDistances, wallDistances, 4*sizeof(float));
+        memcpy(&m_wallDistances, wallDistances, 4 * sizeof(float));
     }
     else
     {
-        memcpy(&m_wallDistances[4], wallDistances, 4*sizeof(float));
+        memcpy(&m_wallDistances[4], wallDistances, 4 * sizeof(float));
     }
 
     // Default the room size to 1000.0f
@@ -297,10 +297,10 @@ void Physics::CalculateCurrentRoomSize()
 
     // Calculate the size of the room, averaging the rectangular with the diagonal measurments.
     roomSize = sqrt(
-        ((m_wallDistances[0] + m_wallDistances[1]) * (m_wallDistances[2]+m_wallDistances[3]) +
-         (m_wallDistances[4] + m_wallDistances[5]) * (m_wallDistances[6]+m_wallDistances[7]))
+        ((m_wallDistances[0] + m_wallDistances[1]) * (m_wallDistances[2] + m_wallDistances[3]) +
+            (m_wallDistances[4] + m_wallDistances[5]) * (m_wallDistances[6] + m_wallDistances[7]))
         / 2.0f
-        );
+    );
 
     if (roomSize > 1000.0f)
     {

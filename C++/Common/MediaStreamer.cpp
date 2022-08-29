@@ -87,7 +87,7 @@ bool MediaStreamer::GetNextBuffer(uint8_t* buffer, uint32_t maxBufferSize, uint3
 {
     winrt::com_ptr<IMFSample> sample;
     winrt::com_ptr<IMFMediaBuffer> mediaBuffer;
-    BYTE *audioData = nullptr;
+    BYTE* audioData = nullptr;
     DWORD sampleBufferLength = 0;
     DWORD flags = 0;
 
@@ -171,7 +171,7 @@ void MediaStreamer::Restart()
         return;
     }
 
-    PROPVARIANT var = {0};
+    PROPVARIANT var = { 0 };
     var.vt = VT_I8;
 
     winrt::check_hresult(

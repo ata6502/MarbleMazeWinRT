@@ -19,15 +19,15 @@ private:
     DirectX::XMFLOAT4X4 m_projection;  // projection matrix
 
 public:
-    void GetViewMatrix(_Out_ DirectX::XMFLOAT4X4 *viewMatrix);
-    void GetProjectionMatrix(_Out_ DirectX::XMFLOAT4X4 *projectionMatrix);
+    void GetViewMatrix(_Out_ DirectX::XMFLOAT4X4* viewMatrix);
+    void GetProjectionMatrix(_Out_ DirectX::XMFLOAT4X4* projectionMatrix);
 
     // this method updates the view matrix based on new position and focus coordinates
     void SetViewParameters(
         _In_ DirectX::XMFLOAT3 eyePosition,    // the position of the camera
         _In_ DirectX::XMFLOAT3 lookPosition,   // the point the camera should look at
         _In_ DirectX::XMFLOAT3 up              // the durection vector for up
-        );
+    );
 
     // this method updates the projection matrix based on new parameters
     void SetProjectionParameters(
@@ -35,5 +35,5 @@ public:
         _In_ float aspectRatio,         // the aspect ratio of the projection (width / height)
         _In_ float nearPlane,           // depth to map to 0
         _In_ float farPlane             // depth to map to 1
-        );
+    );
 };

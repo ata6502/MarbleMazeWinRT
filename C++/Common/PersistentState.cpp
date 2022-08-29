@@ -18,7 +18,7 @@ using namespace DirectX;
 void PersistentState::Initialize(
     _In_ winrt::Windows::Foundation::Collections::IPropertySet settingsValues,
     _In_ std::wstring const& key
-    )
+)
 {
     m_settingsValues = settingsValues;
     m_keyName = key;

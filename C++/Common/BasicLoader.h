@@ -19,19 +19,19 @@ public:
     BasicLoader(
         _In_ winrt::com_ptr<ID3D11Device3> d3dDevice,
         _In_opt_ IWICImagingFactory2* wicFactory = nullptr
-        );
+    );
 
     void LoadTexture(
         _In_ winrt::hstring const& filename,
         _Out_opt_ ID3D11Texture2D** texture,
         _Out_opt_ ID3D11ShaderResourceView** textureView
-        );
+    );
 
     winrt::Windows::Foundation::IAsyncAction LoadTextureAsync(
         _In_ winrt::hstring filename,
         _Out_opt_ ID3D11Texture2D** texture,
         _Out_opt_ ID3D11ShaderResourceView** textureView
-        );
+    );
 
     void LoadShader(
         _In_ winrt::hstring const& filename,
@@ -39,7 +39,7 @@ public:
         _In_ uint32_t layoutDescNumElements,
         _Out_ ID3D11VertexShader** shader,
         _Out_opt_ ID3D11InputLayout** layout
-        );
+    );
 
     winrt::Windows::Foundation::IAsyncAction LoadShaderAsync(
         _In_ winrt::hstring filename,
@@ -47,37 +47,37 @@ public:
         _In_ uint32_t layoutDescNumElements,
         _Out_ ID3D11VertexShader** shader,
         _Out_opt_ ID3D11InputLayout** layout
-        );
+    );
 
     void LoadShader(
         _In_ winrt::hstring const& filename,
         _Out_ ID3D11PixelShader** shader
-        );
+    );
 
     winrt::Windows::Foundation::IAsyncAction LoadShaderAsync(
         _In_ winrt::hstring filename,
         _Out_ ID3D11PixelShader** shader
-        );
+    );
 
     void LoadShader(
         _In_ winrt::hstring const& filename,
         _Out_ ID3D11ComputeShader** shader
-        );
+    );
 
     winrt::Windows::Foundation::IAsyncAction LoadShaderAsync(
         _In_ winrt::hstring const filename,
         _Out_ ID3D11ComputeShader** shader
-        );
+    );
 
     void LoadShader(
         _In_ winrt::hstring const& filename,
         _Out_ ID3D11GeometryShader** shader
-        );
+    );
 
     winrt::Windows::Foundation::IAsyncAction LoadShaderAsync(
         _In_ winrt::hstring filename,
         _Out_ ID3D11GeometryShader** shader
-        );
+    );
 
     void LoadShader(
         _In_ winrt::hstring const& filename,
@@ -87,7 +87,7 @@ public:
         _In_ uint32_t numStrides,
         _In_ uint32_t rasterizedStream,
         _Out_ ID3D11GeometryShader** shader
-        );
+    );
 
     winrt::Windows::Foundation::IAsyncAction LoadShaderAsync(
         _In_ winrt::hstring filename,
@@ -97,27 +97,27 @@ public:
         _In_ uint32_t numStrides,
         _In_ uint32_t rasterizedStream,
         _Out_ ID3D11GeometryShader** shader
-        );
+    );
 
     void LoadShader(
         _In_ winrt::hstring const& filename,
         _Out_ ID3D11HullShader** shader
-        );
+    );
 
     winrt::Windows::Foundation::IAsyncAction LoadShaderAsync(
         _In_ winrt::hstring filename,
         _Out_ ID3D11HullShader** shader
-        );
+    );
 
     void LoadShader(
         _In_ winrt::hstring const& filename,
         _Out_ ID3D11DomainShader** shader
-        );
+    );
 
     winrt::Windows::Foundation::IAsyncAction LoadShaderAsync(
         _In_ winrt::hstring filename,
         _Out_ ID3D11DomainShader** shader
-        );
+    );
 
     void LoadMesh(
         _In_ winrt::hstring const& filename,
@@ -125,7 +125,7 @@ public:
         _Out_ ID3D11Buffer** indexBuffer,
         _Out_opt_ uint32_t* vertexCount,
         _Out_opt_ uint32_t* indexCount
-        );
+    );
 
     winrt::Windows::Foundation::IAsyncAction LoadMeshAsync(
         _In_ winrt::hstring filename,
@@ -133,7 +133,7 @@ public:
         _Out_ ID3D11Buffer** indexBuffer,
         _Out_opt_ uint32_t* vertexCount,
         _Out_opt_ uint32_t* indexCount
-        );
+    );
 
 private:
     winrt::com_ptr<ID3D11Device3> m_d3dDevice;
@@ -144,11 +144,11 @@ private:
     inline void SetDebugName(
         _In_ DeviceChildType* object,
         _In_ winrt::hstring const& name
-        );
+    );
 
     std::wstring GetExtension(
         _In_ winrt::hstring const& filename
-        );
+    );
 
     void CreateTexture(
         _In_ bool decodeAsDDS,
@@ -157,7 +157,7 @@ private:
         _Out_opt_ ID3D11Texture2D** texture,
         _Out_opt_ ID3D11ShaderResourceView** textureView,
         _In_opt_ winrt::hstring const& debugName
-        );
+    );
 
     void CreateInputLayout(
         _In_reads_bytes_(bytecodeSize) const byte* bytecode,
@@ -165,7 +165,7 @@ private:
         _In_reads_opt_(layoutDescNumElements) const D3D11_INPUT_ELEMENT_DESC* layoutDesc,
         _In_ uint32_t layoutDescNumElements,
         _Out_ ID3D11InputLayout** layout
-        );
+    );
 
     void CreateMesh(
         _In_ byte* meshData,
@@ -174,5 +174,5 @@ private:
         _Out_opt_ uint32_t* vertexCount,
         _Out_opt_ uint32_t* indexCount,
         _In_opt_ winrt::hstring const& debugName
-        );
+    );
 };

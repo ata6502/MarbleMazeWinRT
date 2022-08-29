@@ -122,7 +122,7 @@ typedef struct _SDKMESHVERTEXELEMENT
     BYTE    Method;     // Processing method
     BYTE    Usage;      // Semantics
     BYTE    UsageIndex; // Semantic index
-} SDKMESHVERTEXELEMENT, *LPSDKMESHVERTEXELEMENT;
+} SDKMESHVERTEXELEMENT, * LPSDKMESHVERTEXELEMENT;
 
 struct SDKMESH_VERTEX_BUFFER_HEADER
 {
@@ -356,14 +356,14 @@ public:
         UINT diffuseSlot = INVALID_SAMPLER_SLOT,
         UINT normalSlot = INVALID_SAMPLER_SLOT,
         UINT specularSlot = INVALID_SAMPLER_SLOT
-        );
+    );
 
     virtual void RenderAdjacent(
         ID3D11DeviceContext* d3dContext,
         uint32_t diffuseSlot = INVALID_SAMPLER_SLOT,
         uint32_t normalSlot = INVALID_SAMPLER_SLOT,
         uint32_t specularSlot = INVALID_SAMPLER_SLOT
-        );
+    );
 
     // Helpers
     static D3D11_PRIMITIVE_TOPOLOGY GetPrimitiveType(SDKMeshPrimitiveType primitiveType);

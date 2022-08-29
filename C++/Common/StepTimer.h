@@ -44,31 +44,31 @@ namespace DX
         }
 
         // Get elapsed time since the previous Update call.
-        uint64_t GetElapsedTicks() const                      { return m_elapsedTicks; }
-        double GetElapsedSeconds() const                    { return TicksToSeconds(m_elapsedTicks); }
+        uint64_t GetElapsedTicks() const { return m_elapsedTicks; }
+        double GetElapsedSeconds() const { return TicksToSeconds(m_elapsedTicks); }
 
         // Get total time since the start of the program.
-        uint64_t GetTotalTicks() const                        { return m_totalTicks; }
-        double GetTotalSeconds() const                      { return TicksToSeconds(m_totalTicks); }
+        uint64_t GetTotalTicks() const { return m_totalTicks; }
+        double GetTotalSeconds() const { return TicksToSeconds(m_totalTicks); }
 
         // Get total number of updates since start of the program.
-        uint32_t GetFrameCount() const                        { return m_frameCount; }
+        uint32_t GetFrameCount() const { return m_frameCount; }
 
         // Get the current framerate.
-        uint32_t GetFramesPerSecond() const                   { return m_framesPerSecond; }
+        uint32_t GetFramesPerSecond() const { return m_framesPerSecond; }
 
         // Set whether to use fixed or variable timestep mode.
-        void SetFixedTimeStep(bool isFixedTimestep)         { m_isFixedTimeStep = isFixedTimestep; }
+        void SetFixedTimeStep(bool isFixedTimestep) { m_isFixedTimeStep = isFixedTimestep; }
 
         // When in fixed timestep mode, set how often to call Update.
-        void SetTargetElapsedTicks(uint64_t targetElapsed)    { m_targetElapsedTicks = targetElapsed; }
-        void SetTargetElapsedSeconds(double targetElapsed)  { m_targetElapsedTicks = SecondsToTicks(targetElapsed); }
+        void SetTargetElapsedTicks(uint64_t targetElapsed) { m_targetElapsedTicks = targetElapsed; }
+        void SetTargetElapsedSeconds(double targetElapsed) { m_targetElapsedTicks = SecondsToTicks(targetElapsed); }
 
         // Integer format represents time using 10,000,000 ticks per second.
         static const uint64_t TicksPerSecond = 10'000'000;
 
-        static double TicksToSeconds(uint64_t ticks)          { return (double)ticks / TicksPerSecond; }
-        static uint64_t SecondsToTicks(double seconds)        { return (uint64_t)(seconds * TicksPerSecond); }
+        static double TicksToSeconds(uint64_t ticks) { return (double)ticks / TicksPerSecond; }
+        static uint64_t SecondsToTicks(double seconds) { return (uint64_t)(seconds * TicksPerSecond); }
 
         // After an intentional timing discontinuity (for instance a blocking IO operation)
         // call this to avoid fixed timestep logic attempting a string of catch-up Update calls.

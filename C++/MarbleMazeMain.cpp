@@ -105,17 +105,17 @@ MarbleMazeMain::MarbleMazeMain(std::shared_ptr<DX::DeviceResources> const& devic
     m_timer.SetTargetElapsedSeconds(1.0 / 60);
     */
 
-	// Input
-	for (auto const& gamepad : Gamepad::Gamepads())
-	{
+    // Input
+    for (auto const& gamepad : Gamepad::Gamepads())
+    {
         m_myGamepads.push_back(gamepad);
-	}
+    }
 
     Gamepad::GamepadAdded({ this, &MarbleMazeMain::OnGamepadAdded });
     Gamepad::GamepadRemoved({ this, &MarbleMazeMain::OnGamepadRemoved });
 
-	m_gamepad = GetLastGamepad();
-	m_currentGamepadNeedsRefresh = false;
+    m_gamepad = GetLastGamepad();
+    m_currentGamepadNeedsRefresh = false;
 }
 
 void MarbleMazeMain::OnGamepadAdded(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Gaming::Input::Gamepad const& gamepad)
@@ -132,8 +132,8 @@ void MarbleMazeMain::OnGamepadRemoved(winrt::Windows::Foundation::IInspectable c
     // Remove the gamepad if found.
     if (it != m_myGamepads.end())
     {
-    	m_myGamepads.erase(it);
-    	m_currentGamepadNeedsRefresh = true;
+        m_myGamepads.erase(it);
+        m_currentGamepadNeedsRefresh = true;
     }
 }
 
@@ -159,7 +159,7 @@ void MarbleMazeMain::CreateWindowSizeDependentResources()
     m_camera->GetProjectionMatrix(&projection);
 
     XMFLOAT4X4 orientationMatrix = m_deviceResources->GetOrientationTransform3D();
-    XMStoreFloat4x4(&projection, 
+    XMStoreFloat4x4(&projection,
         XMMatrixMultiply(
             XMMatrixTranspose(XMLoadFloat4x4(&orientationMatrix)),
             XMLoadFloat4x4(&projection)
@@ -293,7 +293,7 @@ winrt::Windows::Foundation::IAsyncAction MarbleMazeMain::LoadDeferredResourcesAs
     auto d3dDevice{ m_deviceResources->GetD3DDevice() };
     BasicLoader loader{ d3dDevice };
 
-    D3D11_INPUT_ELEMENT_DESC layoutDesc [] =
+    D3D11_INPUT_ELEMENT_DESC layoutDesc[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -449,9 +449,9 @@ winrt::Windows::Foundation::IAsyncAction MarbleMazeMain::LoadDeferredResourcesAs
             // so we're simulating a longer load time to demonstrate
             // a more real world example
             loadingTimer.Tick([&]()
-            {
-                //do nothing, just wait
-            });
+                {
+                    //do nothing, just wait
+                });
         }
 
         m_deferredResourcesReady = true;
@@ -475,7 +475,7 @@ bool MarbleMazeMain::Render()
     context->RSSetViewports(1, &viewport);
 
     // Reset render targets to the screen.
-    ID3D11RenderTargetView *const targets[1] = { m_deviceResources->GetBackBufferRenderTargetView() };
+    ID3D11RenderTargetView* const targets[1] = { m_deviceResources->GetBackBufferRenderTargetView() };
     context->OMSetRenderTargets(1, targets, m_deviceResources->GetDepthStencilView());
 
     // Clear the back buffer and depth stencil view.
@@ -485,7 +485,7 @@ bool MarbleMazeMain::Render()
     if (!m_deferredResourcesReady)
     {
         // Only render the loading screen for now.
-        m_deviceResources->GetD3DDeviceContext()->BeginEventInt(L"Render Loading Screen",0);
+        m_deviceResources->GetD3DDeviceContext()->BeginEventInt(L"Render Loading Screen", 0);
         m_loadScreen->Render(m_deviceResources->GetOrientationTransform2D());
         m_deviceResources->GetD3DDeviceContext()->EndEvent();
         return true;
@@ -741,440 +741,434 @@ void MarbleMazeMain::Update()
 {
     // Update scene objects.
     m_timer.Tick([&]()
-    {
-        // When the game is first loaded, we display a load screen
-        // and load any deferred resources that might be too expensive
-        // to load during initialization.
-        if (!m_deferredResourcesReady)
         {
-            // At this point we can draw a progress bar, or if we had
-            // loaded audio, we could play audio during the loading process.
-            return;
-        }
+            // When the game is first loaded, we display a load screen
+            // and load any deferred resources that might be too expensive
+            // to load during initialization.
+            if (!m_deferredResourcesReady)
+            {
+                // At this point we can draw a progress bar, or if we had
+                // loaded audio, we could play audio during the loading process.
+                return;
+            }
 
-        if (!m_audio.m_isAudioStarted)
-        {
-            m_audio.Start();
-        }
+            if (!m_audio.m_isAudioStarted)
+            {
+                m_audio.Start();
+            }
 
-        UserInterface::GetInstance().Update(static_cast<float>(m_timer.GetTotalSeconds()), static_cast<float>(m_timer.GetElapsedSeconds()));
+            UserInterface::GetInstance().Update(static_cast<float>(m_timer.GetTotalSeconds()), static_cast<float>(m_timer.GetElapsedSeconds()));
 
-		if (m_gameState == GameState::Initial)
-		{
-			SetGameState(GameState::MainMenu);
-		}
-
-        switch (m_gameState)
-        {
-        case GameState::PreGameCountdown:
-			if (m_preGameCountdownTimer.IsCountdownComplete())
-			{
-				SetGameState(GameState::InGameActive);
-			}
-            break;
-        }
+            if (m_gameState == GameState::Initial)
+            {
+                SetGameState(GameState::MainMenu);
+            }
+            else if (m_gameState == GameState::PreGameCountdown && m_preGameCountdownTimer.IsCountdownComplete())
+            {
+                SetGameState(GameState::InGameActive);
+            }
 
 #pragma region Process Input
 
-        float combinedTiltX = 0.0f;
-        float combinedTiltY = 0.0f;
+            float combinedTiltX = 0.0f;
+            float combinedTiltY = 0.0f;
 
-        // Check whether the user paused or resumed the game.
-        if (ButtonJustPressed(GamepadButtons::Menu) || m_pauseKeyPressed)
-        {
-            m_pauseKeyPressed = false;
-
-			if (m_gameState == GameState::InGameActive)
-			{
-				SetGameState(GameState::InGamePaused);
-			}  
-			else if (m_gameState == GameState::InGamePaused)
-			{
-				SetGameState(GameState::InGameActive);
-			}
-        }
-
-        // Check whether the user restarted the game or cleared the high score table.
-        if (ButtonJustPressed(GamepadButtons::View) || m_homeKeyPressed)
-        {
-            m_homeKeyPressed = false;
-
-            if (m_gameState == GameState::InGameActive ||
-                m_gameState == GameState::InGamePaused ||
-                m_gameState == GameState::PreGameCountdown)
+            // Check whether the user paused or resumed the game.
+            if (ButtonJustPressed(GamepadButtons::Menu) || m_pauseKeyPressed)
             {
-                SetGameState(GameState::MainMenu);
-                m_inGameStopwatchTimer.SetVisible(false);
-                m_preGameCountdownTimer.SetVisible(false);
+                m_pauseKeyPressed = false;
+
+                if (m_gameState == GameState::InGameActive)
+                {
+                    SetGameState(GameState::InGamePaused);
+                }
+                else if (m_gameState == GameState::InGamePaused)
+                {
+                    SetGameState(GameState::InGameActive);
+                }
             }
-            else if (m_gameState == GameState::HighScoreDisplay)
+
+            // Check whether the user restarted the game or cleared the high score table.
+            if (ButtonJustPressed(GamepadButtons::View) || m_homeKeyPressed)
             {
-                m_highScoreTable.Reset();
+                m_homeKeyPressed = false;
+
+                if (m_gameState == GameState::InGameActive ||
+                    m_gameState == GameState::InGamePaused ||
+                    m_gameState == GameState::PreGameCountdown)
+                {
+                    SetGameState(GameState::MainMenu);
+                    m_inGameStopwatchTimer.SetVisible(false);
+                    m_preGameCountdownTimer.SetVisible(false);
+                }
+                else if (m_gameState == GameState::HighScoreDisplay)
+                {
+                    m_highScoreTable.Reset();
+                }
             }
-        }
 
-        // Check whether the user chose a button from the UI.
-        bool anyPoints = !m_pointQueue.empty();
+            // Check whether the user chose a button from the UI.
+            bool anyPoints = !m_pointQueue.empty();
 
-        while (!m_pointQueue.empty())
-        {
-            UserInterface::GetInstance().HitTest(m_pointQueue.front());
-            m_pointQueue.pop();
-        }
-
-        // Handle menu navigation.
-        bool chooseSelection = (ButtonJustPressed(GamepadButtons::A) || ButtonJustPressed(GamepadButtons::Menu));
-		bool moveUp = ButtonJustPressed(GamepadButtons::DPadUp);
-		bool moveDown = ButtonJustPressed(GamepadButtons::DPadDown);
-
-        switch (m_gameState)
-        {
-        case GameState::MainMenu:
-            if (chooseSelection)
+            while (!m_pointQueue.empty())
             {
-                m_audio.PlaySoundEffect(MenuSelectedEvent);
-				if (m_startGameButton.GetSelected())
-				{
-					m_startGameButton.SetPressed(true);
-				}
-				if (m_highScoreButton.GetSelected())
-				{
-					m_highScoreButton.SetPressed(true);
-				}
+                UserInterface::GetInstance().HitTest(m_pointQueue.front());
+                m_pointQueue.pop();
             }
-            if (moveUp || moveDown)
+
+            // Handle menu navigation.
+            bool chooseSelection = (ButtonJustPressed(GamepadButtons::A) || ButtonJustPressed(GamepadButtons::Menu));
+            bool moveUp = ButtonJustPressed(GamepadButtons::DPadUp);
+            bool moveDown = ButtonJustPressed(GamepadButtons::DPadDown);
+
+            switch (m_gameState)
             {
-                m_startGameButton.SetSelected(!m_startGameButton.GetSelected());
-                m_highScoreButton.SetSelected(!m_startGameButton.GetSelected());
-                m_audio.PlaySoundEffect(MenuChangeEvent);
+            case GameState::MainMenu:
+                if (chooseSelection)
+                {
+                    m_audio.PlaySoundEffect(MenuSelectedEvent);
+                    if (m_startGameButton.GetSelected())
+                    {
+                        m_startGameButton.SetPressed(true);
+                    }
+                    if (m_highScoreButton.GetSelected())
+                    {
+                        m_highScoreButton.SetPressed(true);
+                    }
+                }
+                if (moveUp || moveDown)
+                {
+                    m_startGameButton.SetSelected(!m_startGameButton.GetSelected());
+                    m_highScoreButton.SetSelected(!m_startGameButton.GetSelected());
+                    m_audio.PlaySoundEffect(MenuChangeEvent);
+                }
+                break;
+
+            case GameState::HighScoreDisplay:
+                if (chooseSelection || anyPoints)
+                {
+                    SetGameState(GameState::MainMenu);
+                }
+                break;
+
+            case GameState::PostGameResults:
+                if (chooseSelection || anyPoints)
+                {
+                    SetGameState(GameState::HighScoreDisplay);
+                }
+                break;
+
+            case GameState::InGamePaused:
+                if (m_pausedText.IsPressed())
+                {
+                    m_pausedText.SetPressed(false);
+                    SetGameState(GameState::InGameActive);
+                }
+                break;
             }
-            break;
 
-        case GameState::HighScoreDisplay:
-			if (chooseSelection || anyPoints)
-			{
-				SetGameState(GameState::MainMenu);
-			}
-            break;
-
-        case GameState::PostGameResults:
-			if (chooseSelection || anyPoints)
-			{
-				SetGameState(GameState::HighScoreDisplay);
-			}
-            break;
-
-        case GameState::InGamePaused:
-            if (m_pausedText.IsPressed())
+            // Update the game state if the user chose a menu option.
+            if (m_startGameButton.IsPressed())
             {
-                m_pausedText.SetPressed(false);
-                SetGameState(GameState::InGameActive);
+                SetGameState(GameState::PreGameCountdown);
+                m_startGameButton.SetPressed(false);
             }
-            break;
-        }
 
-        // Update the game state if the user chose a menu option.
-        if (m_startGameButton.IsPressed())
-        {
-            SetGameState(GameState::PreGameCountdown);
-            m_startGameButton.SetPressed(false);
-        }
-
-        if (m_highScoreButton.IsPressed())
-        {
-            SetGameState(GameState::HighScoreDisplay);
-            m_highScoreButton.SetPressed(false);
-        }
-
-		// Process controller input.
-		if (m_currentGamepadNeedsRefresh)
-		{
-			auto mostRecentGamepad = GetLastGamepad();
-
-			if (m_gamepad != mostRecentGamepad)
-			{
-				m_gamepad = mostRecentGamepad;
-			}
-
-			m_currentGamepadNeedsRefresh = false;
-		}
-
-		if (m_gamepad != nullptr)
-		{
-			m_oldReading = m_newReading;
-			m_newReading = m_gamepad.GetCurrentReading();
-		}
-
-		float leftStickX = static_cast<float>(m_newReading.LeftThumbstickX);
-		float leftStickY = static_cast<float>(m_newReading.LeftThumbstickY);
-
-		auto oppositeSquared = leftStickY * leftStickY;
-		auto adjacentSquared = leftStickX * leftStickX;
-
-		if ((oppositeSquared + adjacentSquared) > m_deadzoneSquared)
-		{
-			combinedTiltX += leftStickX * m_controllerScaleFactor;
-			combinedTiltY += leftStickY * m_controllerScaleFactor;
-		}
-
-        // Account for touch input.
-        for (TouchMap::const_iterator iter = m_touches.cbegin(); iter != m_touches.cend(); ++iter)
-        {
-            combinedTiltX += iter->second.x * m_touchScaleFactor;
-            combinedTiltY += iter->second.y * m_touchScaleFactor;
-        }
-
-        // Account for sensors.
-        if (m_accelerometer != nullptr)
-        {
-            winrt::Windows::Devices::Sensors::AccelerometerReading reading =
-                m_accelerometer.GetCurrentReading();
-
-            if (reading != nullptr)
+            if (m_highScoreButton.IsPressed())
             {
-                combinedTiltX += static_cast<float>(reading.AccelerationX()) * m_accelerometerScaleFactor;
-                combinedTiltY += static_cast<float>(reading.AccelerationY()) * m_accelerometerScaleFactor;
+                SetGameState(GameState::HighScoreDisplay);
+                m_highScoreButton.SetPressed(false);
             }
-        }
 
-        // Clamp input.
-        combinedTiltX = std::max(-1.f, std::min(1.f, combinedTiltX));
-        combinedTiltY = std::max(-1.f, std::min(1.f, combinedTiltY));
+            // Process controller input.
+            if (m_currentGamepadNeedsRefresh)
+            {
+                auto mostRecentGamepad = GetLastGamepad();
 
-        if (m_gameState != GameState::PreGameCountdown &&
-            m_gameState != GameState::InGameActive &&
-            m_gameState != GameState::InGamePaused)
-        {
-            // Ignore tilt when the menu is active.
-            combinedTiltX = 0.0f;
-            combinedTiltY = 0.0f;
-        }
+                if (m_gamepad != mostRecentGamepad)
+                {
+                    m_gamepad = mostRecentGamepad;
+                }
+
+                m_currentGamepadNeedsRefresh = false;
+            }
+
+            if (m_gamepad != nullptr)
+            {
+                m_oldReading = m_newReading;
+                m_newReading = m_gamepad.GetCurrentReading();
+            }
+
+            float leftStickX = static_cast<float>(m_newReading.LeftThumbstickX);
+            float leftStickY = static_cast<float>(m_newReading.LeftThumbstickY);
+
+            auto oppositeSquared = leftStickY * leftStickY;
+            auto adjacentSquared = leftStickX * leftStickX;
+
+            if ((oppositeSquared + adjacentSquared) > m_deadzoneSquared)
+            {
+                combinedTiltX += leftStickX * m_controllerScaleFactor;
+                combinedTiltY += leftStickY * m_controllerScaleFactor;
+            }
+
+            // Account for touch input.
+            for (TouchMap::const_iterator iter = m_touches.cbegin(); iter != m_touches.cend(); ++iter)
+            {
+                combinedTiltX += iter->second.x * m_touchScaleFactor;
+                combinedTiltY += iter->second.y * m_touchScaleFactor;
+            }
+
+            // Account for sensors.
+            if (m_accelerometer != nullptr)
+            {
+                winrt::Windows::Devices::Sensors::AccelerometerReading reading =
+                    m_accelerometer.GetCurrentReading();
+
+                if (reading != nullptr)
+                {
+                    combinedTiltX += static_cast<float>(reading.AccelerationX()) * m_accelerometerScaleFactor;
+                    combinedTiltY += static_cast<float>(reading.AccelerationY()) * m_accelerometerScaleFactor;
+                }
+            }
+
+            // Clamp input.
+            combinedTiltX = std::max(-1.f, std::min(1.f, combinedTiltX));
+            combinedTiltY = std::max(-1.f, std::min(1.f, combinedTiltY));
+
+            if (m_gameState != GameState::PreGameCountdown &&
+                m_gameState != GameState::InGameActive &&
+                m_gameState != GameState::InGamePaused)
+            {
+                // Ignore tilt when the menu is active.
+                combinedTiltX = 0.0f;
+                combinedTiltY = 0.0f;
+            }
 
 #pragma endregion
 
 #pragma region Physics
 
-        const float maxTilt = 1.0f / 8.0f;
-        XMVECTOR gravity = XMVectorSet(combinedTiltX * maxTilt, combinedTiltY * maxTilt, 1.0f, 0.0f);
-        gravity = XMVector3Normalize(gravity);
+            const float maxTilt = 1.0f / 8.0f;
+            XMVECTOR gravity = XMVectorSet(combinedTiltX * maxTilt, combinedTiltY * maxTilt, 1.0f, 0.0f);
+            gravity = XMVector3Normalize(gravity);
 
-        XMFLOAT3A g;
-        ZeroMemory(&g, sizeof(g));
-        XMStoreFloat3(&g, gravity);
-        m_physics.SetGravity(g);
+            XMFLOAT3A g;
+            ZeroMemory(&g, sizeof(g));
+            XMStoreFloat3(&g, gravity);
+            m_physics.SetGravity(g);
 
-        if (m_gameState == GameState::InGameActive)
-        {
-            // Only update physics when gameplay is active.
-            m_physics.UpdatePhysicsSimulation(static_cast<float>(m_timer.GetElapsedSeconds()));
-
-            // Handle checkpoints.
-            switch (UpdateCheckpoints())
+            if (m_gameState == GameState::InGameActive)
             {
-            case CheckpointState::Save:
-                // Display checkpoint notice.
-                m_checkpointText.SetVisible(true);
-                m_checkpointText.SetTextOpacity(1.0f);
-                m_checkpointText.FadeOut(2.0f);
-                m_audio.PlaySoundEffect(CheckpointEvent);
-                SaveState();
-                break;
+                // Only update physics when gameplay is active.
+                m_physics.UpdatePhysicsSimulation(static_cast<float>(m_timer.GetElapsedSeconds()));
 
-            case CheckpointState::Goal:
-                // Add the new high score.
-                m_inGameStopwatchTimer.Stop();
-                m_newHighScore.elapsedTime = m_inGameStopwatchTimer.GetElapsedTime();
-                SYSTEMTIME systemTime;
-                GetLocalTime(&systemTime);
-                WCHAR buffer[64];
-                swprintf_s(buffer, L"%d/%d/%d", systemTime.wYear, systemTime.wMonth, systemTime.wDay);
-                m_newHighScore.tag = std::wstring(buffer);
-                m_highScoreTable.AddNewEntry(m_newHighScore);
+                // Handle checkpoints.
+                switch (UpdateCheckpoints())
+                {
+                case CheckpointState::Save:
+                    // Display checkpoint notice.
+                    m_checkpointText.SetVisible(true);
+                    m_checkpointText.SetTextOpacity(1.0f);
+                    m_checkpointText.FadeOut(2.0f);
+                    m_audio.PlaySoundEffect(CheckpointEvent);
+                    SaveState();
+                    break;
 
-                m_audio.PlaySoundEffect(CheckpointEvent);
-                m_audio.StopSoundEffect(RollingEvent);
+                case CheckpointState::Goal:
+                    // Add the new high score.
+                    m_inGameStopwatchTimer.Stop();
+                    m_newHighScore.elapsedTime = m_inGameStopwatchTimer.GetElapsedTime();
+                    SYSTEMTIME systemTime;
+                    GetLocalTime(&systemTime);
+                    WCHAR buffer[64];
+                    swprintf_s(buffer, L"%d/%d/%d", systemTime.wYear, systemTime.wMonth, systemTime.wDay);
+                    m_newHighScore.tag = std::wstring(buffer);
+                    m_highScoreTable.AddNewEntry(m_newHighScore);
 
-                // Display game results.
-                SetGameState(GameState::PostGameResults);
-                SaveState();
-                break;
+                    m_audio.PlaySoundEffect(CheckpointEvent);
+                    m_audio.StopSoundEffect(RollingEvent);
+
+                    // Display game results.
+                    SetGameState(GameState::PostGameResults);
+                    SaveState();
+                    break;
+                }
             }
-        }
 
-        XMFLOAT3A marblePosition;
-        memcpy(&marblePosition, &m_physics.GetPosition(), sizeof(XMFLOAT3));
-        static XMFLOAT3A oldMarblePosition = marblePosition;
+            XMFLOAT3A marblePosition;
+            memcpy(&marblePosition, &m_physics.GetPosition(), sizeof(XMFLOAT3));
+            static XMFLOAT3A oldMarblePosition = marblePosition;
 
-        const XMMATRIX initialMarbleRotationMatrix = XMMatrixMultiply( XMMatrixRotationY(90.0f * (XM_PI / 180.0f)) , XMMatrixRotationX(90.0f * (XM_PI / 180.0f)));
+            const XMMATRIX initialMarbleRotationMatrix = XMMatrixMultiply(XMMatrixRotationY(90.0f * (XM_PI / 180.0f)), XMMatrixRotationX(90.0f * (XM_PI / 180.0f)));
 
-        static XMMATRIX marbleRotationMatrix = initialMarbleRotationMatrix;
+            static XMMATRIX marbleRotationMatrix = initialMarbleRotationMatrix;
 
-        // Check whether the marble fell off of the maze.
-        const float fadeOutDepth = 0.0f;
-        const float resetDepth = 80.0f;
-        if (marblePosition.z >= fadeOutDepth)
-        {
-            m_targetLightStrength = 0.0f;
-        }
-        if (marblePosition.z >= resetDepth)
-        {
-            // Reset marble.
-            memcpy(&marblePosition, &m_checkpoints[m_currentCheckpoint], sizeof(XMFLOAT3));
+            // Check whether the marble fell off of the maze.
+            const float fadeOutDepth = 0.0f;
+            const float resetDepth = 80.0f;
+            if (marblePosition.z >= fadeOutDepth)
+            {
+                m_targetLightStrength = 0.0f;
+            }
+            if (marblePosition.z >= resetDepth)
+            {
+                // Reset marble.
+                memcpy(&marblePosition, &m_checkpoints[m_currentCheckpoint], sizeof(XMFLOAT3));
+                oldMarblePosition = marblePosition;
+                m_physics.SetPosition((const XMFLOAT3&)marblePosition);
+                m_physics.SetVelocity(XMFLOAT3(0, 0, 0));
+                m_lightStrength = 0.0f;
+                m_targetLightStrength = 1.0f;
+
+                m_resetCamera = true;
+                m_resetMarbleRotation = true;
+                m_audio.PlaySoundEffect(FallingEvent);
+            }
+
+            XMFLOAT3A marbleRotation;
+            XMStoreFloat3A(&marbleRotation, (XMLoadFloat3A(&oldMarblePosition) - XMLoadFloat3A(&marblePosition)) / m_physics.GetRadius());
             oldMarblePosition = marblePosition;
-            m_physics.SetPosition((const XMFLOAT3&) marblePosition);
-            m_physics.SetVelocity(XMFLOAT3(0, 0, 0));
-            m_lightStrength = 0.0f;
-            m_targetLightStrength = 1.0f;
 
-            m_resetCamera = true;
-            m_resetMarbleRotation = true;
-            m_audio.PlaySoundEffect(FallingEvent);
-        }
-
-        XMFLOAT3A marbleRotation;
-        XMStoreFloat3A(&marbleRotation, (XMLoadFloat3A(&oldMarblePosition) - XMLoadFloat3A(&marblePosition)) / m_physics.GetRadius());
-        oldMarblePosition = marblePosition;
-
-        if (m_resetMarbleRotation)
-        {
-            marbleRotationMatrix = initialMarbleRotationMatrix;
-            m_resetMarbleRotation = false;
-        }
-        else
-        {
-            marbleRotationMatrix = XMMatrixMultiply(marbleRotationMatrix, XMMatrixRotationY(marbleRotation.x /** 180.0f / 3.1415926535f*/));
-            marbleRotationMatrix = XMMatrixMultiply(marbleRotationMatrix, XMMatrixRotationX(-marbleRotation.y /** -180.0f / 3.1415926535f*/));
-        }
+            if (m_resetMarbleRotation)
+            {
+                marbleRotationMatrix = initialMarbleRotationMatrix;
+                m_resetMarbleRotation = false;
+            }
+            else
+            {
+                marbleRotationMatrix = XMMatrixMultiply(marbleRotationMatrix, XMMatrixRotationY(marbleRotation.x /** 180.0f / 3.1415926535f*/));
+                marbleRotationMatrix = XMMatrixMultiply(marbleRotationMatrix, XMMatrixRotationX(-marbleRotation.y /** -180.0f / 3.1415926535f*/));
+            }
 
 #pragma endregion
 
 #pragma region Update Camera
 
-        static float eyeDistance = 200.0f;
-        static XMFLOAT3A eyePosition = XMFLOAT3A(0, 0, 0);
+            static float eyeDistance = 200.0f;
+            static XMFLOAT3A eyePosition = XMFLOAT3A(0, 0, 0);
 
-        // Gradually move the camera above the marble.
-        XMFLOAT3A targetEyePosition;
-        XMStoreFloat3A(&targetEyePosition, XMLoadFloat3A(&marblePosition) - (XMLoadFloat3A(&g) * eyeDistance));
+            // Gradually move the camera above the marble.
+            XMFLOAT3A targetEyePosition;
+            XMStoreFloat3A(&targetEyePosition, XMLoadFloat3A(&marblePosition) - (XMLoadFloat3A(&g) * eyeDistance));
 
-        if (m_resetCamera)
-        {
-            eyePosition = targetEyePosition;
-            m_resetCamera = false;
-        }
-        else
-        {
-            XMStoreFloat3A(&eyePosition, XMLoadFloat3A(&eyePosition) + ((XMLoadFloat3A(&targetEyePosition) - XMLoadFloat3A(&eyePosition)) * std::min(1.f, static_cast<float>(m_timer.GetElapsedSeconds()) * 8)));
-        }
+            if (m_resetCamera)
+            {
+                eyePosition = targetEyePosition;
+                m_resetCamera = false;
+            }
+            else
+            {
+                XMStoreFloat3A(&eyePosition, XMLoadFloat3A(&eyePosition) + ((XMLoadFloat3A(&targetEyePosition) - XMLoadFloat3A(&eyePosition)) * std::min(1.f, static_cast<float>(m_timer.GetElapsedSeconds()) * 8)));
+            }
 
-        // Look at the marble.
-        if ((m_gameState == GameState::MainMenu) || (m_gameState == GameState::HighScoreDisplay))
-        {
-            // Override camera position for menus.
-            XMStoreFloat3A(&eyePosition, XMLoadFloat3A(&marblePosition) + XMVectorSet(75.0f, -150.0f, -75.0f, 0.0f));
-            m_camera->SetViewParameters(eyePosition, marblePosition, XMFLOAT3(0.0f, 0.0f, -1.0f));
-        }
-        else
-        {
-            m_camera->SetViewParameters(eyePosition, marblePosition, XMFLOAT3(0.0f, 1.0f, 0.0f));
-        }
+            // Look at the marble.
+            if ((m_gameState == GameState::MainMenu) || (m_gameState == GameState::HighScoreDisplay))
+            {
+                // Override camera position for menus.
+                XMStoreFloat3A(&eyePosition, XMLoadFloat3A(&marblePosition) + XMVectorSet(75.0f, -150.0f, -75.0f, 0.0f));
+                m_camera->SetViewParameters(eyePosition, marblePosition, XMFLOAT3(0.0f, 0.0f, -1.0f));
+            }
+            else
+            {
+                m_camera->SetViewParameters(eyePosition, marblePosition, XMFLOAT3(0.0f, 1.0f, 0.0f));
+            }
 
 #pragma endregion
 
 #pragma region Update Constant Buffers
 
-        // Update the model matrices based on the simulation.
-        XMStoreFloat4x4(&m_mazeConstantBufferData.model, XMMatrixIdentity());
-        XMStoreFloat4x4(&m_marbleConstantBufferData.model, XMMatrixTranspose(XMMatrixMultiply(marbleRotationMatrix, XMMatrixTranslationFromVector(XMLoadFloat3A(&marblePosition)))));
+            // Update the model matrices based on the simulation.
+            XMStoreFloat4x4(&m_mazeConstantBufferData.model, XMMatrixIdentity());
+            XMStoreFloat4x4(&m_marbleConstantBufferData.model, XMMatrixTranspose(XMMatrixMultiply(marbleRotationMatrix, XMMatrixTranslationFromVector(XMLoadFloat3A(&marblePosition)))));
 
-        // Update the view matrix based on the camera.
-        XMFLOAT4X4 view;
-        m_camera->GetViewMatrix(&view);
-        m_mazeConstantBufferData.view = view;
-        m_marbleConstantBufferData.view = view;
+            // Update the view matrix based on the camera.
+            XMFLOAT4X4 view;
+            m_camera->GetViewMatrix(&view);
+            m_mazeConstantBufferData.view = view;
+            m_marbleConstantBufferData.view = view;
 
-        // Update lighting constants.
-        m_lightStrength += (m_targetLightStrength - m_lightStrength) * std::min(1.f, static_cast<float>(m_timer.GetElapsedSeconds()) * 4);
+            // Update lighting constants.
+            m_lightStrength += (m_targetLightStrength - m_lightStrength) * std::min(1.f, static_cast<float>(m_timer.GetElapsedSeconds()) * 4);
 
-        m_mazeConstantBufferData.marblePosition = marblePosition;
-        m_mazeConstantBufferData.marbleRadius = m_physics.GetRadius();
-        m_mazeConstantBufferData.lightStrength = m_lightStrength;
-        m_marbleConstantBufferData.marblePosition = marblePosition;
-        m_marbleConstantBufferData.marbleRadius = m_physics.GetRadius();
-        m_marbleConstantBufferData.lightStrength = m_lightStrength;
+            m_mazeConstantBufferData.marblePosition = marblePosition;
+            m_mazeConstantBufferData.marbleRadius = m_physics.GetRadius();
+            m_mazeConstantBufferData.lightStrength = m_lightStrength;
+            m_marbleConstantBufferData.marblePosition = marblePosition;
+            m_marbleConstantBufferData.marbleRadius = m_physics.GetRadius();
+            m_marbleConstantBufferData.lightStrength = m_lightStrength;
 
 #pragma endregion
 
 #pragma region Update Audio
 
-        if (!m_audio.HasEngineExperiencedCriticalError())
-        {
-            if (m_gameState == GameState::InGameActive)
+            if (!m_audio.HasEngineExperiencedCriticalError())
             {
-                float wallDistances[8];
-                int returnedCount = m_physics.GetRoomDimensions(wallDistances, ARRAYSIZE(wallDistances));
-                assert(returnedCount == ARRAYSIZE(wallDistances));
-                m_audio.SetRoomSize(m_physics.GetRoomSize(), wallDistances);
-                CollisionInfo ci = m_physics.GetCollisionInfo();
-
-                // Calculate roll sound, and pitch according to velocity.
-                XMFLOAT3 velocity = m_physics.GetVelocity();
-                XMFLOAT3 position = m_physics.GetPosition();
-                float volumeX = abs(velocity.x) / 200;
-                if (volumeX > 1.0) volumeX = 1.0;
-                if (volumeX < 0.0) volumeX = 0.0;
-                float volumeY = abs(velocity.y) / 200;
-                if (volumeY > 1.0) volumeY = 1.0;
-                if (volumeY < 0.0) volumeY = 0.0;
-                float volume = std::max(volumeX, volumeY);
-
-                // Pitch of the rolling sound ranges from .85 to 1.05f,
-                // increasing logarithmically.
-                float pitch = .85f + (volume * volume / 5.0f);
-
-                // Play the roll sound only if the marble is actually rolling.
-                if (ci.isRollingOnFloor && volume > 0)
+                if (m_gameState == GameState::InGameActive)
                 {
-                    if (!m_audio.IsSoundEffectStarted(RollingEvent))
+                    float wallDistances[8];
+                    int returnedCount = m_physics.GetRoomDimensions(wallDistances, ARRAYSIZE(wallDistances));
+                    assert(returnedCount == ARRAYSIZE(wallDistances));
+                    m_audio.SetRoomSize(m_physics.GetRoomSize(), wallDistances);
+                    CollisionInfo ci = m_physics.GetCollisionInfo();
+
+                    // Calculate roll sound, and pitch according to velocity.
+                    XMFLOAT3 velocity = m_physics.GetVelocity();
+                    XMFLOAT3 position = m_physics.GetPosition();
+                    float volumeX = abs(velocity.x) / 200;
+                    if (volumeX > 1.0) volumeX = 1.0;
+                    if (volumeX < 0.0) volumeX = 0.0;
+                    float volumeY = abs(velocity.y) / 200;
+                    if (volumeY > 1.0) volumeY = 1.0;
+                    if (volumeY < 0.0) volumeY = 0.0;
+                    float volume = std::max(volumeX, volumeY);
+
+                    // Pitch of the rolling sound ranges from .85 to 1.05f,
+                    // increasing logarithmically.
+                    float pitch = .85f + (volume * volume / 5.0f);
+
+                    // Play the roll sound only if the marble is actually rolling.
+                    if (ci.isRollingOnFloor && volume > 0)
                     {
-                        m_audio.PlaySoundEffect(RollingEvent);
+                        if (!m_audio.IsSoundEffectStarted(RollingEvent))
+                        {
+                            m_audio.PlaySoundEffect(RollingEvent);
+                        }
+
+                        // Update the volume and pitch by the velocity.
+                        m_audio.SetSoundEffectVolume(RollingEvent, volume);
+                        m_audio.SetSoundEffectPitch(RollingEvent, pitch);
+
+                        // The rolling sound has at most 8000Hz sounds, so we linearly
+                        // ramp up the low-pass filter the faster we go.
+                        // We also reduce the Q-value of the filter, starting with a
+                        // relatively broad cutoff and get progressively tighter.
+                        m_audio.SetSoundEffectFilter(
+                            RollingEvent,
+                            600.0f + 8000.0f * volume,
+                            XAUDIO2_MAX_FILTER_ONEOVERQ - volume * volume
+                        );
+                    }
+                    else
+                    {
+                        m_audio.SetSoundEffectVolume(RollingEvent, 0);
                     }
 
-                    // Update the volume and pitch by the velocity.
-                    m_audio.SetSoundEffectVolume(RollingEvent, volume);
-                    m_audio.SetSoundEffectPitch(RollingEvent, pitch);
+                    if (ci.elasticCollision && ci.maxCollisionSpeed > 10)
+                    {
+                        m_audio.PlaySoundEffect(CollisionEvent);
 
-                    // The rolling sound has at most 8000Hz sounds, so we linearly
-                    // ramp up the low-pass filter the faster we go.
-                    // We also reduce the Q-value of the filter, starting with a
-                    // relatively broad cutoff and get progressively tighter.
-                    m_audio.SetSoundEffectFilter(
-                        RollingEvent,
-                        600.0f + 8000.0f * volume,
-                        XAUDIO2_MAX_FILTER_ONEOVERQ - volume * volume
-                    );
+                        float collisionVolume = ci.maxCollisionSpeed / 150.0f;
+                        collisionVolume = std::min(collisionVolume * collisionVolume, 1.0f);
+                        m_audio.SetSoundEffectVolume(CollisionEvent, collisionVolume);
+                    }
                 }
                 else
                 {
                     m_audio.SetSoundEffectVolume(RollingEvent, 0);
                 }
-
-                if (ci.elasticCollision && ci.maxCollisionSpeed > 10)
-                {
-                    m_audio.PlaySoundEffect(CollisionEvent);
-
-                    float collisionVolume = ci.maxCollisionSpeed / 150.0f;
-                    collisionVolume = std::min(collisionVolume * collisionVolume, 1.0f);
-                    m_audio.SetSoundEffectVolume(CollisionEvent, collisionVolume);
-                }
             }
-            else
-            {
-                m_audio.SetSoundEffectVolume(RollingEvent, 0);
-            }
-        }
 #pragma endregion
-    });
+        });
 }
 
 void MarbleMazeMain::SaveState()
@@ -1383,14 +1377,14 @@ HRESULT MarbleMazeMain::ExtractTrianglesFromMesh(SDKMesh& mesh, const char* mesh
     {
         return E_FAIL;
     }
-    SDKMESH_MESH *currentmesh = mesh.GetMesh(meshIndex);
+    SDKMESH_MESH* currentmesh = mesh.GetMesh(meshIndex);
 
     for (UINT i = 0; i < currentmesh->NumSubsets; ++i)
     {
-        SDKMESH_SUBSET *subsetmesh = mesh.GetSubset(meshIndex, i);
+        SDKMESH_SUBSET* subsetmesh = mesh.GetSubset(meshIndex, i);
 
-        USHORT *indices = (USHORT*) mesh.GetRawIndicesAt(currentmesh->IndexBuffer) + subsetmesh->IndexStart;
-        BYTE *vertices = mesh.GetRawVerticesAt(currentmesh->VertexBuffers[0]) + (subsetmesh->VertexStart * m_vertexStride);
+        USHORT* indices = (USHORT*)mesh.GetRawIndicesAt(currentmesh->IndexBuffer) + subsetmesh->IndexStart;
+        BYTE* vertices = mesh.GetRawVerticesAt(currentmesh->VertexBuffers[0]) + (subsetmesh->VertexStart * m_vertexStride);
         for (UINT j = 0; j < subsetmesh->IndexCount; j += 3)
         {
             XMFLOAT3 a, b, c;
@@ -1457,16 +1451,16 @@ winrt::fire_and_forget MarbleMazeMain::HandleDeviceRestored()
 
 bool MarbleMazeMain::ButtonJustPressed(GamepadButtons selection)
 {
-	bool newSelectionPressed = (selection == (m_newReading.Buttons & selection));
-	bool oldSelectionPressed = (selection == (m_oldReading.Buttons & selection));
-	return newSelectionPressed && !oldSelectionPressed;
+    bool newSelectionPressed = (selection == (m_newReading.Buttons & selection));
+    bool oldSelectionPressed = (selection == (m_oldReading.Buttons & selection));
+    return newSelectionPressed && !oldSelectionPressed;
 }
 
 bool MarbleMazeMain::ButtonJustReleased(GamepadButtons selection)
 {
-	bool newSelectionReleased = (GamepadButtons::None == (m_newReading.Buttons & selection));
-	bool oldSelectionReleased = (GamepadButtons::None == (m_oldReading.Buttons & selection));
-	return newSelectionReleased && !oldSelectionReleased;
+    bool newSelectionReleased = (GamepadButtons::None == (m_newReading.Buttons & selection));
+    bool oldSelectionReleased = (GamepadButtons::None == (m_oldReading.Buttons & selection));
+    return newSelectionReleased && !oldSelectionReleased;
 }
 
 winrt::Windows::Gaming::Input::Gamepad MarbleMazeMain::GetLastGamepad()

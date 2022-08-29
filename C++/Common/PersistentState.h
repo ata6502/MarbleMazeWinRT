@@ -18,7 +18,7 @@ public:
     void Initialize(
         _In_ winrt::Windows::Foundation::Collections::IPropertySet settingsValues,
         _In_ std::wstring const& key
-        );
+    );
 
     void SaveBool(std::wstring const& key, bool value);
     void SaveInt32(std::wstring const& key, int value);

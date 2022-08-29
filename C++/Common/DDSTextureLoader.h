@@ -30,7 +30,7 @@ void CreateDDSTextureFromMemory(
     _Outptr_opt_ ID3D11ShaderResourceView** textureView,
     _In_ size_t maxsize = 0,
     _Out_opt_ D2D1_ALPHA_MODE* alphaMode = nullptr
-    );
+);
 
 void CreateDDSTextureFromMemoryEx(
     _In_ ID3D11Device* d3dDevice,
@@ -45,4 +45,4 @@ void CreateDDSTextureFromMemoryEx(
     _Outptr_opt_ ID3D11Resource** texture,
     _Outptr_opt_ ID3D11ShaderResourceView** textureView,
     _Out_opt_ D2D1_ALPHA_MODE* alphaMode = nullptr
-    );
+);
