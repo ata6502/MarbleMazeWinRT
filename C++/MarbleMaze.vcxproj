@@ -275,6 +275,7 @@
     <ClCompile Include="UserInterface\CountdownTimer.cpp" />
     <ClCompile Include="UserInterface\ElementBase.cpp" />
     <ClCompile Include="UserInterface\HighScoreTable.cpp" />
+    <ClCompile Include="UserInterface\MarbleMazeUI.cpp" />
     <ClCompile Include="UserInterface\StopwatchTimer.cpp" />
     <ClCompile Include="UserInterface\TextButton.cpp" />
     <ClCompile Include="UserInterface\TextElement.cpp" />
@@ -304,6 +305,7 @@
     <ClInclude Include="UserInterface\CountdownTimer.h" />
     <ClInclude Include="UserInterface\ElementBase.h" />
     <ClInclude Include="UserInterface\HighScoreTable.h" />
+    <ClInclude Include="UserInterface\MarbleMazeUI.h" />
     <ClInclude Include="UserInterface\StopwatchTimer.h" />
     <ClInclude Include="UserInterface\TextButton.h" />
     <ClInclude Include="UserInterface\TextElement.h" />

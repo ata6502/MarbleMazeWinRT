@@ -23,7 +23,6 @@ struct HighScoreEntry
         wasJustAdded(false) {}
 };
 
-#define MAX_HIGH_SCORES 5
 typedef std::vector<HighScoreEntry> HighScoreEntries;
 
 class HighScoreTable : public TextElement
@@ -40,7 +39,8 @@ public:
     HighScoreEntries GetEntries() { return m_entries; };
     void Reset();
 
-protected:
+private:
+    const uint8_t MAX_HIGH_SCORES = 5;
     HighScoreEntries    m_entries;
 
     void UpdateText();

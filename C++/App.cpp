@@ -10,7 +10,6 @@
 #include "pch.h"
 #include "DeviceResources.h"
 #include "MarbleMazeMain.h"
-#include "UserInterface.h"
 
 #include <dxgidebug.h>
 
@@ -272,7 +271,7 @@ void App::DumpD3DDebug()
     m_deviceResources->GetD3DDeviceContext()->ClearState();
     m_deviceResources->GetD3DDeviceContext()->Flush();
 
-    UserInterface::GetInstance().Release();
+    m_main->ReleaseUserInterfaceResources();
     m_main = nullptr;
     m_deviceResources = nullptr;
 

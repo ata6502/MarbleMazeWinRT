@@ -26,6 +26,8 @@ TextElement::TextElement() :
 void TextElement::Initialize()
 {
     ID2D1DeviceContext* d2dContext = UserInterface::GetD2DContext();
+    m_textColorBrush = nullptr;
+    m_shadowColorBrush = nullptr;
 
     winrt::check_hresult(
         d2dContext->CreateSolidColorBrush(

@@ -23,6 +23,12 @@
     <Filter Include="Content">
       <UniqueIdentifier>{86d6bab2-144a-4b30-a791-8720ff2dd297}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{e038ca09-4baa-4b6b-822d-bacbec0feb40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserInterface">
+      <UniqueIdentifier>{0328b134-e205-4314-83de-9b14b36b9e83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Audio\background.wma">
@@ -102,23 +108,60 @@
     <ClCompile Include="Content\Collision.cpp">
       <Filter>Content</Filter>
     </ClCompile>
-    <ClCompile Include="Content\Camera.cpp" />
-    <ClCompile Include="Content\SDKMesh.cpp" />
-    <ClCompile Include="Common\BasicReaderWriter.cpp" />
-    <ClCompile Include="Common\BasicLoader.cpp" />
-    <ClCompile Include="Content\SampleOverlay.cpp" />
-    <ClCompile Include="Common\MediaStreamer.cpp" />
-    <ClCompile Include="Content\Audio.cpp" />
-    <ClCompile Include="Common\DDSTextureLoader.cpp" />
-    <ClCompile Include="UserInterface\CountdownTimer.cpp" />
-    <ClCompile Include="UserInterface\ElementBase.cpp" />
-    <ClCompile Include="UserInterface\HighScoreTable.cpp" />
-    <ClCompile Include="UserInterface\StopwatchTimer.cpp" />
-    <ClCompile Include="UserInterface\TextButton.cpp" />
-    <ClCompile Include="UserInterface\TextElement.cpp" />
-    <ClCompile Include="UserInterface\TextStyle.cpp" />
-    <ClCompile Include="UserInterface\UserInterface.cpp" />
-    <ClCompile Include="Common\DeviceResources.cpp" />
+    <ClCompile Include="Common\BasicLoader.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\BasicReaderWriter.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\DDSTextureLoader.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\DeviceResources.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\MediaStreamer.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\Audio.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\Camera.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\SampleOverlay.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\SDKMesh.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\CountdownTimer.cpp">
+      <Filter>UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\ElementBase.cpp">
+      <Filter>UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\HighScoreTable.cpp">
+      <Filter>UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\MarbleMazeUI.cpp">
+      <Filter>UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\StopwatchTimer.cpp">
+      <Filter>UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\TextButton.cpp">
+      <Filter>UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\TextElement.cpp">
+      <Filter>UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\TextStyle.cpp">
+      <Filter>UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\UserInterface.cpp">
+      <Filter>UserInterface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MarbleMazeMain.h" />
@@ -135,27 +178,72 @@
     <ClInclude Include="Content\Collision.h">
       <Filter>Content</Filter>
     </ClInclude>
-    <ClInclude Include="Content\Camera.h" />
-    <ClInclude Include="Content\SDKMesh.h" />
-    <ClInclude Include="Common\BasicReaderWriter.h" />
-    <ClInclude Include="Common\BasicLoader.h" />
-    <ClInclude Include="Content\SampleOverlay.h" />
-    <ClInclude Include="Common\MediaStreamer.h" />
-    <ClInclude Include="Content\Audio.h" />
-    <ClInclude Include="Common\DDSTextureLoader.h" />
-    <ClInclude Include="Common\BasicMath.h" />
-    <ClInclude Include="Common\StepTimer.h" />
-    <ClInclude Include="Common\Primitives.h" />
-    <ClInclude Include="UserInterface\CountdownTimer.h" />
-    <ClInclude Include="UserInterface\ElementBase.h" />
-    <ClInclude Include="UserInterface\HighScoreTable.h" />
-    <ClInclude Include="UserInterface\StopwatchTimer.h" />
-    <ClInclude Include="UserInterface\TextButton.h" />
-    <ClInclude Include="UserInterface\TextElement.h" />
-    <ClInclude Include="UserInterface\TextStyle.h" />
-    <ClInclude Include="UserInterface\UserInterface.h" />
-    <ClInclude Include="Common\DeviceResources.h" />
-    <ClInclude Include="Common\DirectXHelper.h" />
+    <ClInclude Include="Common\BasicLoader.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\BasicMath.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\BasicReaderWriter.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\DDSTextureLoader.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\DeviceResources.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\DirectXHelper.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MediaStreamer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Primitives.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\StepTimer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\Audio.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\Camera.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\SDKMesh.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\SampleOverlay.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\CountdownTimer.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\ElementBase.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\HighScoreTable.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\MarbleMazeUI.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\StopwatchTimer.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\TextButton.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\TextElement.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\TextStyle.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\UserInterface.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
@@ -181,7 +269,11 @@
     </Media>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\BasicPixelShader.hlsl" />
-    <FxCompile Include="Shaders\BasicVertexShader.hlsl" />
+    <FxCompile Include="Shaders\BasicPixelShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\BasicVertexShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

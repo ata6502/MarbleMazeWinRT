@@ -14,18 +14,12 @@
 #include "Collision.h"
 #include "DeviceResources.h"
 #include "LoadScreen.h"
+#include "MarbleMazeUI.h"
 #include "PersistentState.h"
 #include "Physics.h"
 #include "SampleOverlay.h"
 #include "SDKMesh.h"
 #include "StepTimer.h"
-
-// User interface
-#include "CountdownTimer.h"
-#include "HighScoreTable.h"
-#include "StopwatchTimer.h"
-#include "TextButton.h"
-#include "TextElement.h"
 
 // Describes the constant buffer that draws the meshes.
 struct ConstantBuffer
@@ -87,6 +81,7 @@ namespace MarbleMaze
         bool IsDeferredLoadReady() { return m_deferredResourcesReady; }
         void SetWindowVisibility(bool visible);
         void SetWindowClosed();
+        void ReleaseUserInterfaceResources();
 
     private:
         // Cached pointer to device resources.
@@ -99,6 +94,7 @@ namespace MarbleMaze
         DX::StepTimer                                       m_timer;
 
         std::unique_ptr<LoadScreen>                         m_loadScreen;
+        std::unique_ptr<MarbleMazeUI>                       m_ui;
 
         winrt::com_ptr<ID3D11InputLayout>                   m_inputLayout;
         winrt::com_ptr<ID3D11VertexShader>                  m_vertexShader;
@@ -128,15 +124,6 @@ namespace MarbleMaze
         bool                                                m_resetMarbleRotation;
         Checkpoints                                         m_checkpoints;
         size_t                                              m_currentCheckpoint;
-        TextButton                                          m_startGameButton;
-        TextButton                                          m_highScoreButton;
-        HighScoreTable                                      m_highScoreTable;
-        CountdownTimer                                      m_preGameCountdownTimer;
-        StopwatchTimer                                      m_inGameStopwatchTimer;
-        TextElement                                         m_checkpointText;
-        TextButton                                          m_pausedText;
-        TextElement                                         m_resultsText;
-        HighScoreEntry                                      m_newHighScore;
         TouchMap                                            m_touches;
         PointQueue                                          m_pointQueue;
         bool                                                m_pauseKeyActive;

@@ -19,21 +19,6 @@ using namespace DirectX;
 using namespace MarbleMaze;
 using namespace winrt::Windows::Gaming::Input;
 
-inline D2D1_RECT_F ConvertRect(winrt::Windows::Foundation::Size source)
-{
-    // ignore the source.X and source.Y  These are the location on the screen
-    // yet we don't want to use them because all coordinates are window relative.
-    return D2D1::RectF(0.0f, 0.0f, source.Width, source.Height);
-}
-
-inline void InflateRect(D2D1_RECT_F& rect, float x, float y)
-{
-    rect.left -= x;
-    rect.right += x;
-    rect.top -= y;
-    rect.bottom += y;
-}
-
 // Loads and initializes application assets when the application is loaded.
 MarbleMazeMain::MarbleMazeMain(std::shared_ptr<DX::DeviceResources> const& deviceResources) :
     m_deviceResources(deviceResources),
@@ -44,7 +29,8 @@ MarbleMazeMain::MarbleMazeMain(std::shared_ptr<DX::DeviceResources> const& devic
     m_windowActive(false),
     m_deferredResourcesReady(false),
     m_windowClosed(false),
-    m_windowVisible(true)
+    m_windowVisible(true),
+    m_ui(nullptr)
 {
     // Register to be notified if the Device is lost or recreated.
     m_deviceResources->RegisterDeviceNotify(this);
@@ -86,6 +72,8 @@ MarbleMazeMain::MarbleMazeMain(std::shared_ptr<DX::DeviceResources> const& devic
         m_deviceResources->GetD2DDeviceContext(),
         m_deviceResources->GetWicImagingFactory()
     );
+
+    m_ui = std::make_unique<MarbleMazeUI>(m_deviceResources);
 
     UserInterface::GetInstance().Initialize(
         m_deviceResources->GetD2DDevice(),
@@ -169,87 +157,7 @@ void MarbleMazeMain::CreateWindowSizeDependentResources()
     m_mazeConstantBufferData.projection = projection;
     m_marbleConstantBufferData.projection = projection;
 
-    // user interface
-    const float padding = 32.0f;
-    D2D1_RECT_F clientRect = ConvertRect(m_deviceResources->GetLogicalSize());
-    InflateRect(clientRect, -padding, -padding);
-
-    D2D1_RECT_F topHalfRect = clientRect;
-    topHalfRect.bottom = ((clientRect.top + clientRect.bottom) / 2.0f) - (padding / 2.0f);
-    D2D1_RECT_F bottomHalfRect = clientRect;
-    bottomHalfRect.top = topHalfRect.bottom + padding;
-
-    m_startGameButton.Initialize();
-    m_startGameButton.SetAlignment(AlignCenter, AlignFar);
-    m_startGameButton.SetContainer(topHalfRect);
-    m_startGameButton.SetText(L"Start Game");
-    m_startGameButton.SetTextColor(D2D1::ColorF(D2D1::ColorF::White));
-    m_startGameButton.GetTextStyle().SetFontWeight(DWRITE_FONT_WEIGHT_BLACK);
-    m_startGameButton.SetPadding(D2D1::SizeF(32.0f, 16.0f));
-    m_startGameButton.GetTextStyle().SetFontSize(72.0f);
-    UserInterface::GetInstance().RegisterElement(&m_startGameButton);
-
-    m_highScoreButton.Initialize();
-    m_highScoreButton.SetAlignment(AlignCenter, AlignNear);
-    m_highScoreButton.SetContainer(bottomHalfRect);
-    m_highScoreButton.SetText(L"High Scores");
-    m_highScoreButton.SetTextColor(D2D1::ColorF(D2D1::ColorF::White));
-    m_highScoreButton.GetTextStyle().SetFontWeight(DWRITE_FONT_WEIGHT_BLACK);
-    m_highScoreButton.SetPadding(D2D1::SizeF(32.0f, 16.0f));
-    m_highScoreButton.GetTextStyle().SetFontSize(72.0f);
-    UserInterface::GetInstance().RegisterElement(&m_highScoreButton);
-
-    m_highScoreTable.Initialize();
-    m_highScoreTable.SetAlignment(AlignCenter, AlignCenter);
-    m_highScoreTable.SetContainer(clientRect);
-    m_highScoreTable.SetTextColor(D2D1::ColorF(D2D1::ColorF::White));
-    m_highScoreTable.GetTextStyle().SetFontWeight(DWRITE_FONT_WEIGHT_BOLD);
-    m_highScoreTable.GetTextStyle().SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-    m_highScoreTable.GetTextStyle().SetFontSize(60.0f);
-    UserInterface::GetInstance().RegisterElement(&m_highScoreTable);
-
-    m_preGameCountdownTimer.Initialize();
-    m_preGameCountdownTimer.SetAlignment(AlignCenter, AlignCenter);
-    m_preGameCountdownTimer.SetContainer(clientRect);
-    m_preGameCountdownTimer.SetTextColor(D2D1::ColorF(D2D1::ColorF::White));
-    m_preGameCountdownTimer.GetTextStyle().SetFontWeight(DWRITE_FONT_WEIGHT_BLACK);
-    m_preGameCountdownTimer.GetTextStyle().SetFontSize(144.0f);
-    UserInterface::GetInstance().RegisterElement(&m_preGameCountdownTimer);
-
-    m_inGameStopwatchTimer.Initialize();
-    m_inGameStopwatchTimer.SetAlignment(AlignNear, AlignFar);
-    m_inGameStopwatchTimer.SetContainer(clientRect);
-    m_inGameStopwatchTimer.SetTextColor(D2D1::ColorF(D2D1::ColorF::White, 0.75f));
-    m_inGameStopwatchTimer.GetTextStyle().SetFontWeight(DWRITE_FONT_WEIGHT_BLACK);
-    m_inGameStopwatchTimer.GetTextStyle().SetFontSize(96.0f);
-    UserInterface::GetInstance().RegisterElement(&m_inGameStopwatchTimer);
-
-    m_checkpointText.Initialize();
-    m_checkpointText.SetAlignment(AlignCenter, AlignCenter);
-    m_checkpointText.SetContainer(clientRect);
-    m_checkpointText.SetText(L"Checkpoint!");
-    m_checkpointText.SetTextColor(D2D1::ColorF(D2D1::ColorF::White));
-    m_checkpointText.GetTextStyle().SetFontWeight(DWRITE_FONT_WEIGHT_BLACK);
-    m_checkpointText.GetTextStyle().SetFontSize(72.0f);
-    UserInterface::GetInstance().RegisterElement(&m_checkpointText);
-
-    m_pausedText.Initialize();
-    m_pausedText.SetAlignment(AlignCenter, AlignCenter);
-    m_pausedText.SetContainer(clientRect);
-    m_pausedText.SetText(L"Paused");
-    m_pausedText.SetTextColor(D2D1::ColorF(D2D1::ColorF::White));
-    m_pausedText.GetTextStyle().SetFontWeight(DWRITE_FONT_WEIGHT_BLACK);
-    m_pausedText.GetTextStyle().SetFontSize(72.0f);
-    UserInterface::GetInstance().RegisterElement(&m_pausedText);
-
-    m_resultsText.Initialize();
-    m_resultsText.SetAlignment(AlignCenter, AlignCenter);
-    m_resultsText.SetContainer(clientRect);
-    m_resultsText.SetTextColor(D2D1::ColorF(D2D1::ColorF::White));
-    m_resultsText.GetTextStyle().SetFontWeight(DWRITE_FONT_WEIGHT_BOLD);
-    m_resultsText.GetTextStyle().SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-    m_resultsText.GetTextStyle().SetFontSize(36.0f);
-    UserInterface::GetInstance().RegisterElement(&m_resultsText);
+    m_ui->CreateWindowSizeDependentResources();
 
     if ((!m_deferredResourcesReady) && m_loadScreen != nullptr)
     {
@@ -598,22 +506,21 @@ void MarbleMazeMain::SetGameState(GameState nextState)
     switch (m_gameState)
     {
     case GameState::MainMenu:
-        m_startGameButton.SetVisible(false);
-        m_highScoreButton.SetVisible(false);
+        m_ui->HideMenu();
         break;
 
     case GameState::HighScoreDisplay:
-        m_highScoreTable.SetVisible(false);
+        m_ui->HideHighScoreTable();
         break;
 
     case GameState::PreGameCountdown:
-        m_preGameCountdownTimer.SetVisible(false);
-        m_inGameStopwatchTimer.Reset();
-        m_inGameStopwatchTimer.SetVisible(true);
+        m_ui->HidePreGameCountdown();
+        m_ui->ResetGameStopwatch();
+        m_ui->ShowGameStopwatch();
         break;
 
     case GameState::PostGameResults:
-        m_resultsText.SetVisible(false);
+        m_ui->HidePostGameInfo();
         break;
     }
 
@@ -621,12 +528,7 @@ void MarbleMazeMain::SetGameState(GameState nextState)
     switch (nextState)
     {
     case GameState::MainMenu:
-        m_startGameButton.SetVisible(true);
-        m_startGameButton.SetSelected(true);
-        m_highScoreButton.SetVisible(true);
-        m_highScoreButton.SetSelected(false);
-        m_pausedText.SetVisible(false);
-
+        m_ui->ShowMenu();
         m_resetCamera = true;
         m_resetMarbleRotation = true;
         m_physics.SetPosition(XMFLOAT3(305, -210, -43));
@@ -634,14 +536,11 @@ void MarbleMazeMain::SetGameState(GameState nextState)
         break;
 
     case GameState::HighScoreDisplay:
-        m_highScoreTable.SetVisible(true);
+        m_ui->ShowHighScoreTable();
         break;
 
     case GameState::PreGameCountdown:
-        m_inGameStopwatchTimer.SetVisible(false);
-        m_preGameCountdownTimer.SetVisible(true);
-        m_preGameCountdownTimer.StartCountdown(3);
-
+        m_ui->StartPreGameCountdown();
         ResetCheckpoints();
         m_resetCamera = true;
         m_resetMarbleRotation = true;
@@ -651,36 +550,18 @@ void MarbleMazeMain::SetGameState(GameState nextState)
         break;
 
     case GameState::InGameActive:
-        m_preGameCountdownTimer.SetVisible(false);
-        m_pausedText.SetVisible(false);
-        m_inGameStopwatchTimer.Start();
+        m_ui->ResumeGame();
         m_targetLightStrength = 1.0f;
         break;
 
     case GameState::InGamePaused:
-        m_pausedText.SetVisible(true);
-        m_inGameStopwatchTimer.Stop();
+        m_ui->PauseGame();
         m_targetLightStrength = 0.6f;
         break;
 
     case GameState::PostGameResults:
-        m_inGameStopwatchTimer.Stop();
-        m_inGameStopwatchTimer.SetVisible(false);
-        m_resultsText.SetVisible(true);
-        {
-            // Show post-game info.
-            WCHAR formattedTime[32];
-            m_inGameStopwatchTimer.GetFormattedTime(formattedTime, m_newHighScore.elapsedTime);
-            WCHAR buffer[64];
-            swprintf_s(
-                buffer,
-                L"%s\nYour time: %s",
-                (m_newHighScore.wasJustAdded ? L"New High Score!" : L"Finished!"),
-                formattedTime
-            );
-            m_resultsText.SetText(buffer);
-            m_resultsText.SetVisible(true);
-        }
+        m_ui->HideGameStopwatch();
+        m_ui->ShowPostGameInfo();
         m_targetLightStrength = 0.6f;
         break;
     }
@@ -763,7 +644,7 @@ void MarbleMazeMain::Update()
             {
                 SetGameState(GameState::MainMenu);
             }
-            else if (m_gameState == GameState::PreGameCountdown && m_preGameCountdownTimer.IsCountdownComplete())
+            else if (m_gameState == GameState::PreGameCountdown && m_ui->IsCountdownComplete())
             {
                 SetGameState(GameState::InGameActive);
             }
@@ -798,12 +679,10 @@ void MarbleMazeMain::Update()
                     m_gameState == GameState::PreGameCountdown)
                 {
                     SetGameState(GameState::MainMenu);
-                    m_inGameStopwatchTimer.SetVisible(false);
-                    m_preGameCountdownTimer.SetVisible(false);
                 }
                 else if (m_gameState == GameState::HighScoreDisplay)
                 {
-                    m_highScoreTable.Reset();
+                    m_ui->ResetHighScoreTable();
                 }
             }
 
@@ -827,19 +706,11 @@ void MarbleMazeMain::Update()
                 if (chooseSelection)
                 {
                     m_audio.PlaySoundEffect(MenuSelectedEvent);
-                    if (m_startGameButton.GetSelected())
-                    {
-                        m_startGameButton.SetPressed(true);
-                    }
-                    if (m_highScoreButton.GetSelected())
-                    {
-                        m_highScoreButton.SetPressed(true);
-                    }
+                    m_ui->SetPressedButton();
                 }
                 if (moveUp || moveDown)
                 {
-                    m_startGameButton.SetSelected(!m_startGameButton.GetSelected());
-                    m_highScoreButton.SetSelected(!m_startGameButton.GetSelected());
+                    m_ui->ToggleSelectedButton();
                     m_audio.PlaySoundEffect(MenuChangeEvent);
                 }
                 break;
@@ -859,25 +730,25 @@ void MarbleMazeMain::Update()
                 break;
 
             case GameState::InGamePaused:
-                if (m_pausedText.IsPressed())
+                if (m_ui->IsPausedPressed())
                 {
-                    m_pausedText.SetPressed(false);
+                    m_ui->SetPausedPressed(false);
                     SetGameState(GameState::InGameActive);
                 }
                 break;
             }
 
             // Update the game state if the user chose a menu option.
-            if (m_startGameButton.IsPressed())
+            if (m_ui->IsStartButtonPressed())
             {
                 SetGameState(GameState::PreGameCountdown);
-                m_startGameButton.SetPressed(false);
+                m_ui->SetStartButtonPressed(false);
             }
 
-            if (m_highScoreButton.IsPressed())
+            if (m_ui->IsHighScoreButtonPressed())
             {
                 SetGameState(GameState::HighScoreDisplay);
-                m_highScoreButton.SetPressed(false);
+                m_ui->SetHighScoreButtonPressed(false);
             }
 
             // Process controller input.
@@ -967,24 +838,13 @@ void MarbleMazeMain::Update()
                 {
                 case CheckpointState::Save:
                     // Display checkpoint notice.
-                    m_checkpointText.SetVisible(true);
-                    m_checkpointText.SetTextOpacity(1.0f);
-                    m_checkpointText.FadeOut(2.0f);
+                    m_ui->ShowCheckpoint();
                     m_audio.PlaySoundEffect(CheckpointEvent);
                     SaveState();
                     break;
 
                 case CheckpointState::Goal:
-                    // Add the new high score.
-                    m_inGameStopwatchTimer.Stop();
-                    m_newHighScore.elapsedTime = m_inGameStopwatchTimer.GetElapsedTime();
-                    SYSTEMTIME systemTime;
-                    GetLocalTime(&systemTime);
-                    WCHAR buffer[64];
-                    swprintf_s(buffer, L"%d/%d/%d", systemTime.wYear, systemTime.wMonth, systemTime.wDay);
-                    m_newHighScore.tag = std::wstring(buffer);
-                    m_highScoreTable.AddNewEntry(m_newHighScore);
-
+                    m_ui->AddNewHighScore();
                     m_audio.PlaySoundEffect(CheckpointEvent);
                     m_audio.StopSoundEffect(RollingEvent);
 
@@ -1175,13 +1035,13 @@ void MarbleMazeMain::SaveState()
 {
     m_persistentState.SaveXMFLOAT3(L":Position", m_physics.GetPosition());
     m_persistentState.SaveXMFLOAT3(L":Velocity", m_physics.GetVelocity());
-    m_persistentState.SaveSingle(L":ElapsedTime", m_inGameStopwatchTimer.GetElapsedTime());
+    m_persistentState.SaveSingle(L":ElapsedTime", m_ui->GetCurrentStopwatchTime());
 
     m_persistentState.SaveInt32(L":GameState", static_cast<int>(m_gameState));
     m_persistentState.SaveInt32(L":Checkpoint", static_cast<int>(m_currentCheckpoint));
 
     int i = 0;
-    HighScoreEntries entries = m_highScoreTable.GetEntries();
+    HighScoreEntries entries = m_ui->GetHighScoreEntries();
 
     m_persistentState.SaveInt32(L":ScoreCount", static_cast<int>(entries.size()));
     for (auto iter = entries.begin(); iter != entries.end(); ++iter)
@@ -1215,8 +1075,8 @@ void MarbleMazeMain::LoadState()
 
     case GameState::InGameActive:
     case GameState::InGamePaused:
-        m_inGameStopwatchTimer.SetVisible(true);
-        m_inGameStopwatchTimer.SetElapsedTime(elapsedTime);
+        m_ui->ShowGameStopwatch();
+        m_ui->SetCurrentGameStopwatchTime(elapsedTime);
         m_physics.SetPosition(position);
         m_physics.SetVelocity(velocity);
         m_currentCheckpoint = currentCheckpoint;
@@ -1233,7 +1093,7 @@ void MarbleMazeMain::LoadState()
         HighScoreEntry entry;
         entry.elapsedTime = m_persistentState.LoadSingle(L":ScoreTime" + str, 0.0f);
         entry.tag = m_persistentState.LoadString(L":ScoreTag" + str, L"");
-        m_highScoreTable.AddEntry(entry);
+        m_ui->AddHighScore(entry);
     }
 }
 
@@ -1336,8 +1196,6 @@ void MarbleMazeMain::OnFocusChange(bool active)
                 else if (m_gameState == GameState::PreGameCountdown)
                 {
                     SetGameState(GameState::MainMenu);
-                    m_inGameStopwatchTimer.SetVisible(false);
-                    m_preGameCountdownTimer.SetVisible(false);
                 }
             }
         }
@@ -1354,6 +1212,11 @@ void MarbleMazeMain::SetWindowVisibility(bool visible)
 void MarbleMazeMain::SetWindowClosed()
 {
     m_windowClosed = true;
+}
+
+void MarbleMazeMain::ReleaseUserInterfaceResources()
+{
+    UserInterface::GetInstance().Release();
 }
 
 FORCEINLINE int FindMeshIndexByName(SDKMesh& mesh, const char* meshName)
