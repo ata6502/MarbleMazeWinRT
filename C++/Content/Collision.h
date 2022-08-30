@@ -49,7 +49,7 @@ struct Contact
         return XMLoadFloat3((DirectX::XMFLOAT3*)&plane);
     }
 
-    BOOL IsColliding() const
+    bool IsColliding() const
     {
         const float MIN_COLLISION_DISTANCE = -1.0E-5f;
         return penetrationDistance <= MIN_COLLISION_DISTANCE;
@@ -62,14 +62,14 @@ struct Contact
 
     DirectX::XMVECTOR Resolve(DirectX::FXMVECTOR position, DirectX::FXMVECTOR radius);
 
-    BOOL CalculateContact(DirectX::FXMVECTOR position, DirectX::FXMVECTOR radiusIn, DirectX::FXMVECTOR path);
+    bool CalculateContact(DirectX::FXMVECTOR position, DirectX::FXMVECTOR radiusIn, DirectX::FXMVECTOR path);
 };
 
 // The collision engine
 class Collision
 {
 private:
-    BOOL m_intersectsGround;
+    bool m_intersectsGround;
 
 public:
     std::vector<Triangle> m_groundTriList;
@@ -78,26 +78,26 @@ public:
     std::vector<Contact> m_collisions;
 
     Collision() :
-        m_intersectsGround(FALSE)
+        m_intersectsGround(false)
     {
     }
 
-    inline BOOL IntersectsWithGround() const
+    inline bool IntersectsWithGround() const
     {
         return m_intersectsGround;
     }
 
-    BOOL BuildCollisionListForSphere(const Sphere& meshLocalSpace, DirectX::FXMVECTOR path);
+    bool BuildCollisionListForSphere(Sphere const& meshLocalSpace, DirectX::FXMVECTOR path);
     Contact* FindWorstInterpenetration();
     void UpdateInterpenetrations(DirectX::FXMVECTOR newPosition, DirectX::FXMVECTOR radius, DirectX::FXMVECTOR path);
 
 private:
     void MergeSharedEdgeCoplanarContacts(DirectX::FXMVECTOR sphere, DirectX::FXMVECTOR radius, DirectX::FXMVECTOR path);
-    BOOL AccumulateSphereTriangleIntersections(
+    bool AccumulateSphereTriangleIntersections(
         DirectX::FXMVECTOR sphere,
         DirectX::FXMVECTOR radius,
         DirectX::FXMVECTOR path,
         MeshID mesh,
-        const std::vector<Triangle>& triList
+        std::vector<Triangle> const& triList
     );
 };

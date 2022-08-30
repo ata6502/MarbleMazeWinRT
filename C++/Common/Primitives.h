@@ -50,8 +50,8 @@ public:
         DirectX::FXMVECTOR V1,
         DirectX::FXMVECTOR V2,
         DirectX::CXMVECTOR planeIn,
-        BOOL& sharesEdgeOut,
-        BOOL& coplanar
+        bool& sharesEdgeOut,
+        bool& coplanar
     ) const
     {
         using namespace DirectX;

@@ -63,17 +63,17 @@ static inline XMVECTOR PointOnPlaneInsideTriangle(FXMVECTOR P, FXMVECTOR V0, FXM
 
 #pragma endregion
 
-BOOL Collision::AccumulateSphereTriangleIntersections(
+bool Collision::AccumulateSphereTriangleIntersections(
     FXMVECTOR sphere,
     FXMVECTOR radius,
     FXMVECTOR path,
     MeshID mesh,
-    const std::vector<Triangle>& triList
+    std::vector<Triangle> const& triList
 )
 {
     size_t triCount = triList.size();
+    bool found = false;
 
-    BOOL found = FALSE;
     for (size_t i = 0; i < triCount; ++i)
     {
         Contact f(triList[i], i, mesh);
@@ -81,7 +81,7 @@ BOOL Collision::AccumulateSphereTriangleIntersections(
         if (f.CalculateContact(sphere, radius, path))
         {
             m_collisions.push_back(f);
-            found = TRUE;
+            found = true;
         }
     }
 
@@ -89,7 +89,7 @@ BOOL Collision::AccumulateSphereTriangleIntersections(
 }
 
 // Builds a list of triangles which are fully or partially enclosed by the sphere.
-BOOL Collision::BuildCollisionListForSphere(const Sphere& meshLocalSpace, FXMVECTOR path)
+bool Collision::BuildCollisionListForSphere(Sphere const& meshLocalSpace, FXMVECTOR path)
 {
     m_collisions.clear();
     XMVECTOR sphere = XMLoadFloat4(&meshLocalSpace.center);
@@ -97,7 +97,7 @@ BOOL Collision::BuildCollisionListForSphere(const Sphere& meshLocalSpace, FXMVEC
 
     m_intersectsGround = AccumulateSphereTriangleIntersections(sphere, radius, path, MeshID::Ground, m_groundTriList);
 
-    BOOL intersected = m_intersectsGround;
+    bool intersected = m_intersectsGround;
     intersected |= AccumulateSphereTriangleIntersections(sphere, radius, path, MeshID::Wall, m_wallTriList);
 
     // NOTE: We don't collide against the floor, as the mesh has some edges which interfere with normal rolling.
@@ -171,7 +171,7 @@ void Collision::MergeSharedEdgeCoplanarContacts(FXMVECTOR sphere, FXMVECTOR radi
             if (!c2.IsColliding())
                 continue;
 
-            BOOL coplanar, sharesverts;
+            bool coplanar, sharesverts;
             c2.triangle.CheckSharesVertsOrCoplanar(A, B, C, N, sharesverts, coplanar);
 
             if (sharesverts)
@@ -195,7 +195,7 @@ void Collision::MergeSharedEdgeCoplanarContacts(FXMVECTOR sphere, FXMVECTOR radi
 
                     // Find new contact point - project sphere center down onto plane.
                     XMStoreFloat3(&c1.contactPosition, newContact);
-                    c1.contactIsEdge = FALSE;
+                    c1.contactIsEdge = false;
                     XMStoreFloat(&c1.penetrationDistance, penetration);
 
                 }
@@ -209,7 +209,7 @@ void Collision::MergeSharedEdgeCoplanarContacts(FXMVECTOR sphere, FXMVECTOR radi
                     // If they're nearly equal, recalculate normal as average of two tris.
                     if (XMVector3NearEqual(contactPos1, contactPos2, epsilon))
                     {
-                        c1.contactIsEdge = FALSE;
+                        c1.contactIsEdge = false;
                         XMVECTOR C1Normal = c1.triangle.Normal();
                         XMVECTOR C2Normal = c2.triangle.Normal();
                         XMVECTOR newNormal = XMVector3Normalize(C1Normal + C2Normal);
@@ -251,7 +251,7 @@ XMVECTOR Contact::Resolve(FXMVECTOR position, [[maybe_unused]] FXMVECTOR radius)
 }
 
 // Calculates the penetration distance of the sphere into the triangle.
-BOOL Contact::CalculateContact(FXMVECTOR position, FXMVECTOR radiusIn, FXMVECTOR path)
+bool Contact::CalculateContact(FXMVECTOR position, FXMVECTOR radiusIn, FXMVECTOR path)
 {
     XMVECTOR V0 = XMLoadFloat3(&triangle.A);
     XMVECTOR V1 = XMLoadFloat3(&triangle.B);
