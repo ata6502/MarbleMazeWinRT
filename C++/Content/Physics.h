@@ -13,7 +13,7 @@
 
 const float Gravity = 981.0f;                               // Strength of gravity (x100 for this simulation scale)
 const float WallFriction = 0.05f;                           // Friction coefficient to apply to the walls.
-const float MaxVelocity = 250.0f;                           // Upper bounds on marble velocity
+const float MaxVelocity = 200.0f;                           // Upper bounds on marble velocity
 const float MinVelocity = 0.1f;                             // Only used if you #define ENABLE_VELOCITY_CLAMP_TO_ZERO
 const float MinAudibleCollisionSpeed = 10.0f;               // Minimum velocity a collision must have before reporting.
 const float WallRestitutionCoefficient = 0.5f;              // How elastic the walls/floor are, from 0.0f to 1.0f
@@ -58,7 +58,7 @@ public:
         ZeroMemory(&m_velDueToAccel, sizeof(DirectX::XMFLOAT3));
         ZeroMemory(&m_acceleration, sizeof(DirectX::XMFLOAT3));
 
-        SetPosition(DirectX::XMFLOAT3(286.39178f, -191.74507f, -42.355251f));
+        SetPosition(DirectX::XMFLOAT3(294.5f, -199.5f, -42.355251f));
     }
 
     // Calculates collision data for use by the audio sim (ricochet sounds, rolling along ground sounds)

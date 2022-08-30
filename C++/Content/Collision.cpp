@@ -102,7 +102,7 @@ bool Collision::BuildCollisionListForSphere(Sphere const& meshLocalSpace, FXMVEC
 
     // NOTE: We don't collide against the floor, as the mesh has some edges which interfere with normal rolling.
 
-    // intersected |= AccumulateSphereTriangleIntersections(sphere, radius, path, MeshID::Floor, m_floorTriList);
+    //intersected |= AccumulateSphereTriangleIntersections(sphere, radius, path, MeshID::Floor, m_floorTriList);
 
     MergeSharedEdgeCoplanarContacts(sphere, radius, path);
 
