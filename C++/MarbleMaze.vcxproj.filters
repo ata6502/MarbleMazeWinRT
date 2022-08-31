@@ -132,9 +132,6 @@
     <ClCompile Include="Content\SampleOverlay.cpp">
       <Filter>Content</Filter>
     </ClCompile>
-    <ClCompile Include="Content\SDKMesh.cpp">
-      <Filter>Content</Filter>
-    </ClCompile>
     <ClCompile Include="UserInterface\CountdownTimer.cpp">
       <Filter>UserInterface</Filter>
     </ClCompile>
@@ -161,6 +158,12 @@
     </ClCompile>
     <ClCompile Include="UserInterface\UserInterface.cpp">
       <Filter>UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\SimpleSdkMesh.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\BinaryReader.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -211,9 +214,6 @@
     <ClInclude Include="Content\Camera.h">
       <Filter>Content</Filter>
     </ClInclude>
-    <ClInclude Include="Content\SDKMesh.h">
-      <Filter>Content</Filter>
-    </ClInclude>
     <ClInclude Include="Content\SampleOverlay.h">
       <Filter>Content</Filter>
     </ClInclude>
@@ -243,6 +243,12 @@
     </ClInclude>
     <ClInclude Include="UserInterface\UserInterface.h">
       <Filter>UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\SimpleSdkMesh.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\BinaryReader.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

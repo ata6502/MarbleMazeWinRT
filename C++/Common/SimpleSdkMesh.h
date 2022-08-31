@@ -1,0 +1,295 @@
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+// PARTICULAR PURPOSE.
+//
+// Copyright (c) Microsoft Corporation. All rights reserved
+//
+// Converted to WinRT/C++ by ata6502
+
+//
+// The SDK Mesh format (.sdkmesh) is not a recommended file format for production games.
+// It was designed to meet the specific needs of the SDK samples.  Any real-world
+// applications should avoid this file format in favor of a destination format that
+// meets the specific needs of the application.
+//
+
+#pragma once
+
+#define MAX_MESH_NAME 100
+#define MAX_VERTEX_STREAMS 16
+#define MAX_VERTEX_ELEMENTS 32
+#define MAX_SUBSET_NAME 100
+#define MAX_FRAME_NAME 100
+#define MAX_MATERIAL_NAME 100
+#define SDKMESH_FILE_VERSION 101
+#define INVALID_FRAME ((uint32_t)-1)
+#define INVALID_MESH ((uint32_t)-1)
+#define INVALID_SAMPLER_SLOT ((uint32_t)-1)
+#define ERROR_RESOURCE_VALUE 1
+#define MAX_MATERIAL_PATH MAX_PATH
+#define MAX_TEXTURE_NAME MAX_PATH
+
+//--------------------------------------------------------------------------------------
+// Structures.  Unions with pointers are forced to 64bit.
+//--------------------------------------------------------------------------------------
+
+struct SDKMESH_HEADER
+{
+    // Basic info and sizes
+    uint32_t Version;
+    uint8_t  IsBigEndian;
+    uint64_t HeaderSize;
+    uint64_t NonBufferDataSize;
+    uint64_t BufferDataSize;
+
+    // Stats
+    uint32_t NumVertexBuffers;
+    uint32_t NumIndexBuffers;
+    uint32_t NumMeshes;
+    uint32_t NumTotalSubsets;
+    uint32_t NumFrames;
+    uint32_t NumMaterials;
+
+    // Offsets to data
+    uint64_t VertexStreamHeadersOffset;
+    uint64_t IndexStreamHeadersOffset;
+    uint64_t MeshDataOffset;
+    uint64_t SubsetDataOffset;
+    uint64_t FrameDataOffset;
+    uint64_t MaterialDataOffset;
+};
+
+typedef struct _SDKMESHVERTEXELEMENT
+{
+    WORD    Stream;     // Stream index
+    WORD    Offset;     // Offset in the stream in bytes
+    BYTE    Type;       // Data type
+    BYTE    Method;     // Processing method
+    BYTE    Usage;      // Semantics
+    BYTE    UsageIndex; // Semantic index
+} SDKMESHVERTEXELEMENT, * LPSDKMESHVERTEXELEMENT;
+
+struct SDKMESH_VERTEX_BUFFER_HEADER
+{
+    uint64_t NumVertices;
+    uint64_t SizeBytes;
+    uint64_t StrideBytes;
+    SDKMESHVERTEXELEMENT Decl[MAX_VERTEX_ELEMENTS];
+    union
+    {
+        uint64_t DataOffset;                // (This also forces the union to 64bits)
+        ID3D11Buffer* VertexBuffer;
+    };
+};
+
+struct SDKMESH_INDEX_BUFFER_HEADER
+{
+    uint64_t NumIndices;
+    uint64_t SizeBytes;
+    uint32_t IndexType;
+    union
+    {
+        uint64_t DataOffset;                // (This also forces the union to 64bits)
+        ID3D11Buffer* IndexBuffer;
+    };
+};
+
+struct SDKMESH_MESH
+{
+    char Name[MAX_MESH_NAME];
+    BYTE NumVertexBuffers;
+    UINT VertexBuffers[MAX_VERTEX_STREAMS];
+    UINT IndexBuffer;
+    UINT NumSubsets;
+    UINT NumFrameInfluences;             // aka bones
+
+    DirectX::XMFLOAT3 BoundingBoxCenter;
+    DirectX::XMFLOAT3 BoundingBoxExtents;
+
+    union
+    {
+        uint64_t SubsetOffset;            // Offset to list of subsets (This also forces the union to 64bits)
+        UINT* Subsets;                  // Pointer to list of subsets
+    };
+    union
+    {
+        uint64_t FrameInfluenceOffset;    // Offset to list of frame influences (This also forces the union to 64bits)
+        UINT* FrameInfluences;          // Pointer to list of frame influences
+    };
+};
+
+struct SDKMESH_SUBSET
+{
+    char Name[MAX_SUBSET_NAME];
+    UINT MaterialID;
+    UINT PrimitiveType;
+    uint64_t IndexStart;
+    uint64_t IndexCount;
+    uint64_t VertexStart;
+    uint64_t VertexCount;
+};
+
+struct SDKMESH_FRAME
+{
+    char Name[MAX_FRAME_NAME];
+    UINT Mesh;
+    UINT ParentFrame;
+    UINT ChildFrame;
+    UINT SiblingFrame;
+    DirectX::XMFLOAT4X4 Matrix;
+    UINT AnimationDataIndex;        // Used to index which set of keyframes transforms this frame
+};
+
+struct SDKMESH_MATERIAL
+{
+    char Name[MAX_MATERIAL_NAME];
+
+    // Use MaterialInstancePath
+    char MaterialInstancePath[MAX_MATERIAL_PATH];
+
+    // Or fall back to d3d8-type materials
+    char DiffuseTextureName[MAX_TEXTURE_NAME];
+    char NormalTextureName[MAX_TEXTURE_NAME];
+    char SpecularTextureName[MAX_TEXTURE_NAME];
+
+    DirectX::XMFLOAT4 Diffuse;
+    DirectX::XMFLOAT4 Ambient;
+    DirectX::XMFLOAT4 Specular;
+    DirectX::XMFLOAT4 Emissive;
+    FLOAT Power;
+
+    union
+    {
+        uint64_t Force64_1;            // Force the union to 64bits
+        ID3D11Texture2D* DiffuseTexture;
+    };
+    union
+    {
+        uint64_t Force64_2;            // Force the union to 64bits
+        ID3D11Texture2D* NormalTexture;
+    };
+    union
+    {
+        uint64_t Force64_3;            // Force the union to 64bits
+        ID3D11Texture2D* SpecularTexture;
+    };
+
+    union
+    {
+        uint64_t Force64_4;            // Force the union to 64bits
+        ID3D11ShaderResourceView* DiffuseRV;
+    };
+    union
+    {
+        uint64_t Force64_5;            // Force the union to 64bits
+        ID3D11ShaderResourceView* NormalRV;
+    };
+    union
+    {
+        uint64_t Force64_6;            // Force the union to 64bits
+        ID3D11ShaderResourceView* SpecularRV;
+    };
+};
+
+//--------------------------------------------------------------------------------------
+// Enumerated Types.
+//--------------------------------------------------------------------------------------
+enum class SDKMeshPrimitiveType
+{
+    TriangleList = 0,
+    TriangleStrip,
+    LineList,
+    LineStrip,
+    PointList,
+    TriangleListAdjacent,
+    TriangleStripAdjacent,
+    LineListAdjacent,
+    LineStripAdjacent,
+    QuadPatchList,
+    TrianglePatchList,
+};
+
+enum class SDKMeshIndexType
+{
+    Bits16 = 0,
+    Bits32,
+};
+
+//
+// Platform helpers
+//
+template <typename TYPE> BOOL IsErrorResource(TYPE data)
+{
+    if ((TYPE)ERROR_RESOURCE_VALUE == data) {
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+#ifndef SAFE_DELETE
+#define SAFE_DELETE(p)       { if (p) { delete (p); (p) = nullptr; } }
+#endif
+#ifndef SAFE_DELETE_ARRAY
+#define SAFE_DELETE_ARRAY(p) { if (p) { delete[] (p); (p) = nullptr; } }
+#endif
+#ifndef SAFE_RELEASE
+#define SAFE_RELEASE(p)      { if (p) { (p)->Release(); (p) = nullptr; } }
+#endif
+
+class SimpleSdkMesh
+{
+public:
+    SimpleSdkMesh();
+
+    HRESULT Create(ID3D11Device3* d3dDevice, WCHAR* filename, bool createAdjacencyIndices);
+    void Render(ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot);
+    void Destroy();
+
+    uint32_t GetNumMeshes();
+    SDKMESH_MESH* GetMesh(uint32_t mesh);
+    SDKMESH_SUBSET* GetSubset(uint32_t mesh, uint32_t subset);
+    uint32_t GetNumSubsets(uint32_t mesh);
+    byte* GetRawIndicesAt(uint32_t indexBuffer);
+    byte* GetRawVerticesAt(uint32_t vertexBuffer);
+    DirectX::XMFLOAT3 GetMeshBoundingBoxExtents(uint32_t mesh);
+
+private:
+    HANDLE m_hFile;
+
+    WCHAR m_path[MAX_PATH];
+    WCHAR m_meshName[MAX_PATH];
+
+    UINT m_numOutstandingResources;
+    ID3D11Device* m_d3dDevice;
+
+    // Pointers to the data loaded in from the mesh file.
+    BYTE* m_staticMeshData;
+    BYTE* m_heapData;
+    BYTE** m_vertices;
+    BYTE** m_indices;
+
+    // General mesh info
+    SDKMESH_HEADER* m_meshHeader;
+    SDKMESH_VERTEX_BUFFER_HEADER* m_vertexBufferArray;
+    SDKMESH_INDEX_BUFFER_HEADER* m_indexBufferArray;
+    SDKMESH_MESH* m_meshArray;
+    SDKMESH_SUBSET* m_subsetArray;
+    SDKMESH_FRAME* m_frameArray;
+    SDKMESH_MATERIAL* m_materialArray;
+
+    // Adjacency information (not part of the m_pStaticMeshData, so it must be created and destroyed separately)
+    SDKMESH_INDEX_BUFFER_HEADER* m_adjacencyIndexBufferArray;
+
+    HRESULT CreateFromFile(ID3D11Device3* d3dDevice, WCHAR* filename, bool createAdjacencyIndices);
+    HRESULT CreateFromMemory(ID3D11Device3* d3dDevice, byte* data, uint32_t byteCount, bool createAdjacencyIndices, bool copyStatic);
+    HRESULT CreateVertexBuffer(ID3D11Device* d3dDevice, SDKMESH_VERTEX_BUFFER_HEADER* header, void* vertices);
+    HRESULT CreateIndexBuffer(ID3D11Device* d3dDevice, SDKMESH_INDEX_BUFFER_HEADER* header, void* indices);
+    void LoadMaterials(ID3D11Device3* d3dDevice, _In_reads_(numMaterials) SDKMESH_MATERIAL* materials, uint32_t numMaterials);
+    void RenderMesh(uint32_t meshIndex, bool adjacent, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot);
+    void RenderFrame(uint32_t frame, bool adjacent, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot);
+
+    D3D11_PRIMITIVE_TOPOLOGY GetPrimitiveType(SDKMeshPrimitiveType primitiveType);
+    uint32_t GetOutstandingBufferResources();
+};

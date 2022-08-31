@@ -18,7 +18,7 @@
 #include "PersistentState.h"
 #include "Physics.h"
 #include "SampleOverlay.h"
-#include "SDKMesh.h"
+#include "SimpleSdkMesh.h"
 #include "StepTimer.h"
 
 // Describes the constant buffer that draws the meshes.
@@ -110,9 +110,9 @@ namespace MarbleMaze
 
         std::unique_ptr<Camera>                             m_camera;
         ConstantBuffer                                      m_mazeConstantBufferData;
-        SDKMesh                                             m_mazeMesh;
+        SimpleSdkMesh                                             m_mazeMesh;
         ConstantBuffer                                      m_marbleConstantBufferData;
-        SDKMesh                                             m_marbleMesh;
+        SimpleSdkMesh                                             m_marbleMesh;
         unsigned int                                        m_vertexStride;
         float                                               m_lightStrength;
         float                                               m_targetLightStrength;
@@ -150,7 +150,7 @@ namespace MarbleMaze
         bool                                                m_windowVisible;
 
         HRESULT ExtractTrianglesFromMesh(
-            SDKMesh& mesh,
+            SimpleSdkMesh& mesh,
             const char* meshName,
             std::vector<Triangle>& triangles
         );

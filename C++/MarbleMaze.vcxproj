@@ -256,17 +256,18 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Common\BasicLoader.cpp" />
     <ClCompile Include="Common\BasicReaderWriter.cpp" />
+    <ClCompile Include="Common\BinaryReader.cpp" />
     <ClCompile Include="Common\DDSTextureLoader.cpp" />
     <ClCompile Include="Common\DeviceResources.cpp" />
     <ClCompile Include="Common\MediaStreamer.cpp" />
     <ClCompile Include="Common\PersistentState.cpp" />
+    <ClCompile Include="Common\SimpleSdkMesh.cpp" />
     <ClCompile Include="Content\Audio.cpp" />
     <ClCompile Include="Content\Camera.cpp" />
     <ClCompile Include="Content\Collision.cpp" />
     <ClCompile Include="Content\LoadScreen.cpp" />
     <ClCompile Include="Content\Physics.cpp" />
     <ClCompile Include="Content\SampleOverlay.cpp" />
-    <ClCompile Include="Content\SDKMesh.cpp" />
     <ClCompile Include="MarbleMazeMain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -286,12 +287,14 @@
     <ClInclude Include="Common\BasicLoader.h" />
     <ClInclude Include="Common\BasicMath.h" />
     <ClInclude Include="Common\BasicReaderWriter.h" />
+    <ClInclude Include="Common\BinaryReader.h" />
     <ClInclude Include="Common\DDSTextureLoader.h" />
     <ClInclude Include="Common\DeviceResources.h" />
     <ClInclude Include="Common\DirectXHelper.h" />
     <ClInclude Include="Common\MediaStreamer.h" />
     <ClInclude Include="Common\PersistentState.h" />
     <ClInclude Include="Common\Primitives.h" />
+    <ClInclude Include="Common\SimpleSdkMesh.h" />
     <ClInclude Include="Common\StepTimer.h" />
     <ClInclude Include="Content\Audio.h" />
     <ClInclude Include="Content\Camera.h" />
@@ -299,7 +302,6 @@
     <ClInclude Include="Content\LoadScreen.h" />
     <ClInclude Include="Content\Physics.h" />
     <ClInclude Include="Content\SampleOverlay.h" />
-    <ClInclude Include="Content\SDKMesh.h" />
     <ClInclude Include="MarbleMazeMain.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="UserInterface\CountdownTimer.h" />

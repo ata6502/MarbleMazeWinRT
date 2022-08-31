@@ -13,6 +13,8 @@
 #include "MarbleMazeMain.h"
 #include "UserInterface.h"
 
+#include "SimpleSdkMesh.h"
+
 #include <DirectXColors.h> // for named colors
 
 using namespace DirectX;
@@ -351,7 +353,7 @@ winrt::Windows::Foundation::IAsyncAction MarbleMazeMain::LoadDeferredResourcesAs
 
     if (delay)
     {
-        while (loadingTimer.GetTotalSeconds() < 2.0)
+        while (loadingTimer.GetTotalSeconds() < 1.0)
         {
             // MarbleMaze doesn't take long to load resources,
             // so we're simulating a longer load time to demonstrate
@@ -1219,7 +1221,7 @@ void MarbleMazeMain::ReleaseUserInterfaceResources()
     UserInterface::GetInstance().Release();
 }
 
-FORCEINLINE int FindMeshIndexByName(SDKMesh& mesh, const char* meshName)
+FORCEINLINE int FindMeshIndexByName(SimpleSdkMesh& mesh, const char* meshName)
 {
     UINT meshCount = mesh.GetNumMeshes();
     for (UINT i = 0; i < meshCount; ++i)
@@ -1231,7 +1233,7 @@ FORCEINLINE int FindMeshIndexByName(SDKMesh& mesh, const char* meshName)
     return -1; // Not found.
 }
 
-HRESULT MarbleMazeMain::ExtractTrianglesFromMesh(SDKMesh& mesh, const char* meshName, std::vector<Triangle>& triangles)
+HRESULT MarbleMazeMain::ExtractTrianglesFromMesh(SimpleSdkMesh& mesh, const char* meshName, std::vector<Triangle>& triangles)
 {
     triangles.clear();
 
