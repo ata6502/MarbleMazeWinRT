@@ -190,7 +190,7 @@ HRESULT SimpleSdkMesh::CreateFromFile(ID3D11Device3* d3dDevice, std::wstring con
 
     if (SUCCEEDED(hr))
     {
-        hr = CreateFromMemory(d3dDevice, m_staticMeshData, byteCount, createAdjacencyIndices, false);
+        hr = CreateFromMemory(d3dDevice, m_staticMeshData, byteCount, createAdjacencyIndices);
         if (FAILED(hr))
         {
             delete[] m_staticMeshData;
@@ -200,43 +200,25 @@ HRESULT SimpleSdkMesh::CreateFromFile(ID3D11Device3* d3dDevice, std::wstring con
     return hr;
 }
 
-HRESULT SimpleSdkMesh::CreateFromMemory(ID3D11Device3* d3dDevice, byte* data, [[maybe_unused]] uint32_t byteCount, [[maybe_unused]] bool createAdjacencyIndices, bool copyStatic)
+HRESULT SimpleSdkMesh::CreateFromMemory(ID3D11Device3* d3dDevice, uint8_t* meshData, [[maybe_unused]] uint32_t byteCount, [[maybe_unused]] bool createAdjacencyIndices)
 {
     HRESULT hr = E_FAIL;
     XMFLOAT3 lower;
     XMFLOAT3 upper;
 
     m_d3dDevice = d3dDevice;
-
     m_numOutstandingResources = 0;
-
-    if (copyStatic)
-    {
-        SDKMESH_HEADER* header = (SDKMESH_HEADER*)data;
-
-        size_t staticSize = static_cast<size_t>(header->HeaderSize + header->NonBufferDataSize);
-        m_heapData = new uint8_t[staticSize];
-        if (m_heapData == nullptr)
-        {
-            return hr;
-        }
-        m_staticMeshData = m_heapData;
-        CopyMemory(m_staticMeshData, data, staticSize);
-    }
-    else
-    {
-        m_heapData = data;
-        m_staticMeshData = data;
-    }
+    m_heapData = meshData;
+    m_staticMeshData = meshData;
 
     // Pointer fixup
-    m_meshHeader = (SDKMESH_HEADER*)m_staticMeshData;
-    m_vertexBufferArray = (SDKMESH_VERTEX_BUFFER_HEADER*)(m_staticMeshData + m_meshHeader->VertexStreamHeadersOffset);
-    m_indexBufferArray = (SDKMESH_INDEX_BUFFER_HEADER*)(m_staticMeshData + m_meshHeader->IndexStreamHeadersOffset);
-    m_meshArray = (SDKMESH_MESH*)(m_staticMeshData + m_meshHeader->MeshDataOffset);
-    m_subsetArray = (SDKMESH_SUBSET*)(m_staticMeshData + m_meshHeader->SubsetDataOffset);
-    m_frameArray = (SDKMESH_FRAME*)(m_staticMeshData + m_meshHeader->FrameDataOffset);
-    m_materialArray = (SDKMESH_MATERIAL*)(m_staticMeshData + m_meshHeader->MaterialDataOffset);
+    m_meshHeader = reinterpret_cast<SDKMESH_HEADER*>(m_staticMeshData);
+    m_vertexBufferArray = reinterpret_cast<SDKMESH_VERTEX_BUFFER_HEADER*>(m_staticMeshData + m_meshHeader->VertexStreamHeadersOffset);
+    m_indexBufferArray = reinterpret_cast<SDKMESH_INDEX_BUFFER_HEADER*>(m_staticMeshData + m_meshHeader->IndexStreamHeadersOffset);
+    m_meshArray = reinterpret_cast<SDKMESH_MESH*>(m_staticMeshData + m_meshHeader->MeshDataOffset);
+    m_subsetArray = reinterpret_cast<SDKMESH_SUBSET*>(m_staticMeshData + m_meshHeader->SubsetDataOffset);
+    m_frameArray = reinterpret_cast<SDKMESH_FRAME*>(m_staticMeshData + m_meshHeader->FrameDataOffset);
+    m_materialArray = reinterpret_cast<SDKMESH_MATERIAL*>(m_staticMeshData + m_meshHeader->MaterialDataOffset);
 
     // Setup subsets
     for (uint32_t i = 0; i < m_meshHeader->NumMeshes; i++)
@@ -253,7 +235,7 @@ HRESULT SimpleSdkMesh::CreateFromMemory(ID3D11Device3* d3dDevice, byte* data, [[
     }
 
     // Setup buffer data pointer
-    byte* bufferData = data + m_meshHeader->HeaderSize + m_meshHeader->NonBufferDataSize;
+    byte* bufferData = meshData + m_meshHeader->HeaderSize + m_meshHeader->NonBufferDataSize;
 
     // Get the start of the buffer data
     uint64_t bufferDataStart = m_meshHeader->HeaderSize + m_meshHeader->NonBufferDataSize;

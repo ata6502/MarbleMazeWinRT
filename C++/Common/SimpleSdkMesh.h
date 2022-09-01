@@ -285,7 +285,7 @@ private:
     SDKMESH_INDEX_BUFFER_HEADER* m_adjacencyIndexBufferArray;
 
     HRESULT CreateFromFile(ID3D11Device3* d3dDevice, std::wstring const& path, bool createAdjacencyIndices);
-    HRESULT CreateFromMemory(ID3D11Device3* d3dDevice, byte* data, uint32_t byteCount, bool createAdjacencyIndices, bool copyStatic);
+    HRESULT CreateFromMemory(ID3D11Device3* d3dDevice, uint8_t* meshData, uint32_t byteCount, bool createAdjacencyIndices);
     HRESULT CreateVertexBuffer(ID3D11Device* d3dDevice, SDKMESH_VERTEX_BUFFER_HEADER* header, void* vertices);
     HRESULT CreateIndexBuffer(ID3D11Device* d3dDevice, SDKMESH_INDEX_BUFFER_HEADER* header, void* indices);
     void LoadMaterials(ID3D11Device3* d3dDevice, _In_reads_(numMaterials) SDKMESH_MATERIAL* materials, uint32_t numMaterials);
