@@ -7,8 +7,6 @@ using namespace DirectX;
 
 SimpleSdkMesh::SimpleSdkMesh() :
     m_d3dDevice(nullptr),
-    m_staticMeshData(nullptr),
-    m_heapData(nullptr),
     m_adjacencyIndexBufferArray(nullptr),
     m_frameArray(nullptr),
     m_vertexBufferArray(nullptr),
@@ -37,7 +35,7 @@ void SimpleSdkMesh::Render(ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot
 
 void SimpleSdkMesh::Destroy()
 {
-    if (m_staticMeshData != nullptr)
+    if (m_meshData.size() > 0)
     {
         if (m_materialArray != nullptr)
         {
@@ -91,12 +89,10 @@ void SimpleSdkMesh::Destroy()
     }
 
     SAFE_DELETE_ARRAY(m_adjacencyIndexBufferArray);
-    SAFE_DELETE_ARRAY(m_heapData);
-
-    m_staticMeshData = nullptr;
-
     SAFE_DELETE_ARRAY(m_vertices);
     SAFE_DELETE_ARRAY(m_indices);
+
+    m_meshData.clear();
 
     m_meshHeader = nullptr;
     m_vertexBufferArray = nullptr;
@@ -172,59 +168,56 @@ HRESULT SimpleSdkMesh::CreateFromFile(ID3D11Device3* d3dDevice, std::wstring con
     m_meshName = filename.substr(0, p);
 
     uint32_t byteCount = fileInfo.EndOfFile.LowPart;
-    std::vector<byte> fileData(byteCount);
 
     // Allocate memory
-    m_staticMeshData = new byte[byteCount];
-    if (!m_staticMeshData)
-    {
-        winrt::throw_hresult(E_OUTOFMEMORY);
-    }
+    m_meshData.resize(byteCount);
+
+    // TODO: out-of-memory
+    //if (!m_meshData)
+    //{
+    //    winrt::throw_hresult(E_OUTOFMEMORY);
+    //}
 
     // Read in the file
     DWORD bytesRead = 0;
-    if (!ReadFile(file.get(), m_staticMeshData, byteCount, &bytesRead, nullptr))
+    if (!ReadFile(file.get(), static_cast<LPVOID>(m_meshData.data()), byteCount, &bytesRead, nullptr))
     {
         winrt::throw_hresult(E_FAIL);
     }
 
     if (SUCCEEDED(hr))
     {
-        hr = CreateFromMemory(d3dDevice, m_staticMeshData, byteCount, createAdjacencyIndices);
+        hr = CreateFromMemory(d3dDevice, byteCount, createAdjacencyIndices);
         if (FAILED(hr))
         {
-            delete[] m_staticMeshData;
+            m_meshData.clear();
         }
     }
 
     return hr;
 }
 
-HRESULT SimpleSdkMesh::CreateFromMemory(ID3D11Device3* d3dDevice, uint8_t* meshData, [[maybe_unused]] uint32_t byteCount, [[maybe_unused]] bool createAdjacencyIndices)
+HRESULT SimpleSdkMesh::CreateFromMemory(ID3D11Device3* d3dDevice, [[maybe_unused]] uint32_t byteCount, [[maybe_unused]] bool createAdjacencyIndices)
 {
     HRESULT hr = E_FAIL;
-    XMFLOAT3 lower;
-    XMFLOAT3 upper;
 
     m_d3dDevice = d3dDevice;
     m_numOutstandingResources = 0;
-    m_heapData = meshData;
-    m_staticMeshData = meshData;
 
     // Pointer fixup
-    m_meshHeader = reinterpret_cast<SDKMESH_HEADER*>(m_staticMeshData);
-    m_vertexBufferArray = reinterpret_cast<SDKMESH_VERTEX_BUFFER_HEADER*>(m_staticMeshData + m_meshHeader->VertexStreamHeadersOffset);
-    m_indexBufferArray = reinterpret_cast<SDKMESH_INDEX_BUFFER_HEADER*>(m_staticMeshData + m_meshHeader->IndexStreamHeadersOffset);
-    m_meshArray = reinterpret_cast<SDKMESH_MESH*>(m_staticMeshData + m_meshHeader->MeshDataOffset);
-    m_subsetArray = reinterpret_cast<SDKMESH_SUBSET*>(m_staticMeshData + m_meshHeader->SubsetDataOffset);
-    m_frameArray = reinterpret_cast<SDKMESH_FRAME*>(m_staticMeshData + m_meshHeader->FrameDataOffset);
-    m_materialArray = reinterpret_cast<SDKMESH_MATERIAL*>(m_staticMeshData + m_meshHeader->MaterialDataOffset);
+    m_meshHeader = reinterpret_cast<SDKMESH_HEADER*>(m_meshData.data());
+    m_vertexBufferArray = reinterpret_cast<SDKMESH_VERTEX_BUFFER_HEADER*>(m_meshData.data() + m_meshHeader->VertexStreamHeadersOffset);
+    m_indexBufferArray = reinterpret_cast<SDKMESH_INDEX_BUFFER_HEADER*>(m_meshData.data() + m_meshHeader->IndexStreamHeadersOffset);
+    m_meshArray = reinterpret_cast<SDKMESH_MESH*>(m_meshData.data() + m_meshHeader->MeshDataOffset);
+    m_subsetArray = reinterpret_cast<SDKMESH_SUBSET*>(m_meshData.data() + m_meshHeader->SubsetDataOffset);
+    m_frameArray = reinterpret_cast<SDKMESH_FRAME*>(m_meshData.data() + m_meshHeader->FrameDataOffset);
+    m_materialArray = reinterpret_cast<SDKMESH_MATERIAL*>(m_meshData.data() + m_meshHeader->MaterialDataOffset);
 
     // Setup subsets
     for (uint32_t i = 0; i < m_meshHeader->NumMeshes; i++)
     {
-        m_meshArray[i].Subsets = (uint32_t*)(m_staticMeshData + m_meshArray[i].SubsetOffset);
-        m_meshArray[i].FrameInfluences = (uint32_t*)(m_staticMeshData + m_meshArray[i].FrameInfluenceOffset);
+        m_meshArray[i].Subsets = (uint32_t*)(m_meshData.data() + m_meshArray[i].SubsetOffset);
+        m_meshArray[i].FrameInfluences = (uint32_t*)(m_meshData.data() + m_meshArray[i].FrameInfluenceOffset);
     }
 
     // error condition
@@ -235,7 +228,7 @@ HRESULT SimpleSdkMesh::CreateFromMemory(ID3D11Device3* d3dDevice, uint8_t* meshD
     }
 
     // Setup buffer data pointer
-    byte* bufferData = meshData + m_meshHeader->HeaderSize + m_meshHeader->NonBufferDataSize;
+    byte* bufferData = m_meshData.data() + m_meshHeader->HeaderSize + m_meshHeader->NonBufferDataSize;
 
     // Get the start of the buffer data
     uint64_t bufferDataStart = m_meshHeader->HeaderSize + m_meshHeader->NonBufferDataSize;
@@ -274,6 +267,9 @@ HRESULT SimpleSdkMesh::CreateFromMemory(ID3D11Device3* d3dDevice, uint8_t* meshD
     int tris = 0;
     for (uint32_t mesh = 0; mesh < m_meshHeader->NumMeshes; ++mesh)
     {
+        XMFLOAT3 lower;
+        XMFLOAT3 upper;
+
         lower.x = XMVectorGetX(g_XMFltMax); lower.y = XMVectorGetX(g_XMFltMax); lower.z = XMVectorGetX(g_XMFltMax);
         upper.x = -XMVectorGetX(g_XMFltMax); upper.y = -XMVectorGetX(g_XMFltMax); upper.z = -XMVectorGetX(g_XMFltMax);
         currentMesh = GetMesh(mesh);
@@ -360,7 +356,7 @@ HRESULT SimpleSdkMesh::CreateFromMemory(ID3D11Device3* d3dDevice, uint8_t* meshD
         half = XMVectorAdd(l, half);
         XMStoreFloat3(&currentMesh->BoundingBoxCenter, half);
     }
-    // Update
+
     hr = S_OK;
 Error:
     return hr;
@@ -565,7 +561,7 @@ void SimpleSdkMesh::RenderMesh(uint32_t meshIndex, bool adjacent, ID3D11DeviceCo
 
 void SimpleSdkMesh::RenderFrame(uint32_t frame, bool adjacent, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot)
 {
-    if (!m_staticMeshData || !m_frameArray)
+    if (m_meshData.size() == 0 || !m_frameArray)
     {
         return;
     }
