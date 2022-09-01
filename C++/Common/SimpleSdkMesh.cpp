@@ -22,10 +22,12 @@ SimpleSdkMesh::SimpleSdkMesh() :
 {
 }
 
-HRESULT SimpleSdkMesh::Create(ID3D11Device3* d3dDevice, WCHAR* filename)
+HRESULT SimpleSdkMesh::Create(ID3D11Device3* device, WCHAR* filename)
 {
     Destroy();
-    return CreateFromFile(d3dDevice, filename);
+
+    m_d3dDevice = device;
+    return CreateFromFile(filename);
 }
 
 void SimpleSdkMesh::Render(ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot)
@@ -139,7 +141,7 @@ DirectX::XMFLOAT3 SimpleSdkMesh::GetMeshBoundingBoxExtents(uint32_t mesh)
     return m_meshArray[mesh].BoundingBoxExtents;
 }
 
-HRESULT SimpleSdkMesh::CreateFromFile(ID3D11Device3* d3dDevice, std::wstring const& path)
+HRESULT SimpleSdkMesh::CreateFromFile(std::wstring const& path)
 {
     HRESULT hr = S_OK;
 
@@ -181,7 +183,7 @@ HRESULT SimpleSdkMesh::CreateFromFile(ID3D11Device3* d3dDevice, std::wstring con
 
     if (SUCCEEDED(hr))
     {
-        hr = CreateFromMemory(d3dDevice);
+        hr = CreateFromMemory();
         if (FAILED(hr))
         {
             m_meshData.clear();
@@ -191,11 +193,10 @@ HRESULT SimpleSdkMesh::CreateFromFile(ID3D11Device3* d3dDevice, std::wstring con
     return hr;
 }
 
-HRESULT SimpleSdkMesh::CreateFromMemory(ID3D11Device3* d3dDevice)
+HRESULT SimpleSdkMesh::CreateFromMemory()
 {
     HRESULT hr = E_FAIL;
 
-    m_d3dDevice = d3dDevice;
     m_numOutstandingResources = 0;
 
     // Pointer fixup
@@ -233,7 +234,7 @@ HRESULT SimpleSdkMesh::CreateFromMemory(ID3D11Device3* d3dDevice)
     {
         byte* vertices = nullptr;
         vertices = (byte*)(bufferData + (m_vertexBufferArray[i].DataOffset - bufferDataStart));
-        CreateVertexBuffer(d3dDevice, &m_vertexBufferArray[i], vertices);
+        CreateVertexBuffer(&m_vertexBufferArray[i], vertices);
         m_vertices[i] = vertices;
     }
 
@@ -243,15 +244,12 @@ HRESULT SimpleSdkMesh::CreateFromMemory(ID3D11Device3* d3dDevice)
     {
         byte* indices = nullptr;
         indices = (byte*)(bufferData + (m_indexBufferArray[i].DataOffset - bufferDataStart));
-        CreateIndexBuffer(d3dDevice, &m_indexBufferArray[i], indices);
+        CreateIndexBuffer(&m_indexBufferArray[i], indices);
         m_indices[i] = indices;
     }
 
     // Load Materials
-    if (d3dDevice)
-    {
-        LoadMaterials(d3dDevice, m_materialArray, m_meshHeader->NumMaterials);
-    }
+    LoadMaterials(m_materialArray, m_meshHeader->NumMaterials);
 
     SDKMESH_SUBSET* subset = nullptr;
     D3D11_PRIMITIVE_TOPOLOGY primitiveType;
@@ -356,7 +354,7 @@ Error:
     return hr;
 }
 
-HRESULT SimpleSdkMesh::CreateVertexBuffer(ID3D11Device* d3dDevice, SDKMESH_VERTEX_BUFFER_HEADER* header, void* vertices)
+HRESULT SimpleSdkMesh::CreateVertexBuffer(SDKMESH_VERTEX_BUFFER_HEADER* header, void* vertices)
 {
     HRESULT hr = S_OK;
     header->DataOffset = 0;
@@ -371,7 +369,7 @@ HRESULT SimpleSdkMesh::CreateVertexBuffer(ID3D11Device* d3dDevice, SDKMESH_VERTE
 
     D3D11_SUBRESOURCE_DATA initData;
     initData.pSysMem = vertices;
-    hr = d3dDevice->CreateBuffer(&bufferDesc, &initData, &header->VertexBuffer);
+    hr = m_d3dDevice->CreateBuffer(&bufferDesc, &initData, &header->VertexBuffer);
     if (FAILED(hr))
         return hr;
 
@@ -383,7 +381,7 @@ HRESULT SimpleSdkMesh::CreateVertexBuffer(ID3D11Device* d3dDevice, SDKMESH_VERTE
     return hr;
 }
 
-HRESULT SimpleSdkMesh::CreateIndexBuffer(ID3D11Device* d3dDevice, SDKMESH_INDEX_BUFFER_HEADER* header, void* indices)
+HRESULT SimpleSdkMesh::CreateIndexBuffer(SDKMESH_INDEX_BUFFER_HEADER* header, void* indices)
 {
     HRESULT hr = S_OK;
     header->DataOffset = 0;
@@ -398,7 +396,7 @@ HRESULT SimpleSdkMesh::CreateIndexBuffer(ID3D11Device* d3dDevice, SDKMESH_INDEX_
 
     D3D11_SUBRESOURCE_DATA initData;
     initData.pSysMem = indices;
-    hr = d3dDevice->CreateBuffer(&bufferDesc, &initData, &header->IndexBuffer);
+    hr = m_d3dDevice->CreateBuffer(&bufferDesc, &initData, &header->IndexBuffer);
     if (FAILED(hr))
         return hr;
 
@@ -410,10 +408,10 @@ HRESULT SimpleSdkMesh::CreateIndexBuffer(ID3D11Device* d3dDevice, SDKMESH_INDEX_
     return hr;
 }
 
-void SimpleSdkMesh::LoadMaterials(ID3D11Device3* d3dDevice, _In_reads_(numMaterials) SDKMESH_MATERIAL* materials, uint32_t numMaterials)
+void SimpleSdkMesh::LoadMaterials(_In_reads_(numMaterials) SDKMESH_MATERIAL* materials, uint32_t numMaterials)
 {
     winrt::com_ptr<ID3D11Device3> pDevice;
-    pDevice.copy_from(d3dDevice);
+    pDevice.copy_from(m_d3dDevice);
 
     BasicLoader loader(pDevice);
 

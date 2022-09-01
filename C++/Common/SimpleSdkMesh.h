@@ -248,7 +248,7 @@ class SimpleSdkMesh
 public:
     SimpleSdkMesh();
 
-    HRESULT Create(ID3D11Device3* d3dDevice, WCHAR* filename);
+    HRESULT Create(ID3D11Device3* device, WCHAR* filename);
     void Render(ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot);
     void Destroy();
 
@@ -264,7 +264,7 @@ private:
     std::wstring m_meshName;
 
     uint32_t m_numOutstandingResources;
-    ID3D11Device* m_d3dDevice;
+    ID3D11Device3* m_d3dDevice;
 
     // Pointers to the data loaded in from the mesh file.
     std::vector<uint8_t> m_meshData;
@@ -283,11 +283,11 @@ private:
     // Adjacency information (not part of the m_pStaticMeshData, so it must be created and destroyed separately)
     SDKMESH_INDEX_BUFFER_HEADER* m_adjacencyIndexBufferArray;
 
-    HRESULT CreateFromFile(ID3D11Device3* d3dDevice, std::wstring const& path);
-    HRESULT CreateFromMemory(ID3D11Device3* d3dDevice);
-    HRESULT CreateVertexBuffer(ID3D11Device* d3dDevice, SDKMESH_VERTEX_BUFFER_HEADER* header, void* vertices);
-    HRESULT CreateIndexBuffer(ID3D11Device* d3dDevice, SDKMESH_INDEX_BUFFER_HEADER* header, void* indices);
-    void LoadMaterials(ID3D11Device3* d3dDevice, _In_reads_(numMaterials) SDKMESH_MATERIAL* materials, uint32_t numMaterials);
+    HRESULT CreateFromFile(std::wstring const& path);
+    HRESULT CreateFromMemory();
+    HRESULT CreateVertexBuffer(SDKMESH_VERTEX_BUFFER_HEADER* header, void* vertices);
+    HRESULT CreateIndexBuffer(SDKMESH_INDEX_BUFFER_HEADER* header, void* indices);
+    void LoadMaterials(_In_reads_(numMaterials) SDKMESH_MATERIAL* materials, uint32_t numMaterials);
     void RenderMesh(uint32_t meshIndex, bool adjacent, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot);
     void RenderFrame(uint32_t frame, bool adjacent, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot);
 
