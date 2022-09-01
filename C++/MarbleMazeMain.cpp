@@ -300,16 +300,14 @@ winrt::Windows::Foundation::IAsyncAction MarbleMazeMain::LoadDeferredResourcesAs
     winrt::check_hresult(
         m_mazeMesh.Create(
             m_deviceResources->GetD3DDevice().get(),
-            L"Media\\Models\\maze1.sdkmesh",
-            false
+            L"Media\\Models\\maze1.sdkmesh"
         )
     );
 
     winrt::check_hresult(
         m_marbleMesh.Create(
             m_deviceResources->GetD3DDevice().get(),
-            L"Media\\Models\\marble2.sdkmesh",
-            false
+            L"Media\\Models\\marble2.sdkmesh"
         )
     );
 

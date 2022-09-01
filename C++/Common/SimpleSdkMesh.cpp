@@ -22,10 +22,10 @@ SimpleSdkMesh::SimpleSdkMesh() :
 {
 }
 
-HRESULT SimpleSdkMesh::Create(ID3D11Device3* d3dDevice, WCHAR* filename, bool createAdjacencyIndices)
+HRESULT SimpleSdkMesh::Create(ID3D11Device3* d3dDevice, WCHAR* filename)
 {
     Destroy();
-    return CreateFromFile(d3dDevice, filename, createAdjacencyIndices);
+    return CreateFromFile(d3dDevice, filename);
 }
 
 void SimpleSdkMesh::Render(ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot)
@@ -139,7 +139,7 @@ DirectX::XMFLOAT3 SimpleSdkMesh::GetMeshBoundingBoxExtents(uint32_t mesh)
     return m_meshArray[mesh].BoundingBoxExtents;
 }
 
-HRESULT SimpleSdkMesh::CreateFromFile(ID3D11Device3* d3dDevice, std::wstring const& path, bool createAdjacencyIndices)
+HRESULT SimpleSdkMesh::CreateFromFile(ID3D11Device3* d3dDevice, std::wstring const& path)
 {
     HRESULT hr = S_OK;
 
@@ -172,12 +172,6 @@ HRESULT SimpleSdkMesh::CreateFromFile(ID3D11Device3* d3dDevice, std::wstring con
     // Allocate memory
     m_meshData.resize(byteCount);
 
-    // TODO: out-of-memory
-    //if (!m_meshData)
-    //{
-    //    winrt::throw_hresult(E_OUTOFMEMORY);
-    //}
-
     // Read in the file
     DWORD bytesRead = 0;
     if (!ReadFile(file.get(), static_cast<LPVOID>(m_meshData.data()), byteCount, &bytesRead, nullptr))
@@ -187,7 +181,7 @@ HRESULT SimpleSdkMesh::CreateFromFile(ID3D11Device3* d3dDevice, std::wstring con
 
     if (SUCCEEDED(hr))
     {
-        hr = CreateFromMemory(d3dDevice, byteCount, createAdjacencyIndices);
+        hr = CreateFromMemory(d3dDevice);
         if (FAILED(hr))
         {
             m_meshData.clear();
@@ -197,7 +191,7 @@ HRESULT SimpleSdkMesh::CreateFromFile(ID3D11Device3* d3dDevice, std::wstring con
     return hr;
 }
 
-HRESULT SimpleSdkMesh::CreateFromMemory(ID3D11Device3* d3dDevice, [[maybe_unused]] uint32_t byteCount, [[maybe_unused]] bool createAdjacencyIndices)
+HRESULT SimpleSdkMesh::CreateFromMemory(ID3D11Device3* d3dDevice)
 {
     HRESULT hr = E_FAIL;
 
