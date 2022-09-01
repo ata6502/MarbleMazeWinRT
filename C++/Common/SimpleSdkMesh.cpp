@@ -195,8 +195,6 @@ HRESULT SimpleSdkMesh::CreateFromFile(std::wstring const& path)
 
 HRESULT SimpleSdkMesh::CreateFromMemory()
 {
-    HRESULT hr = E_FAIL;
-
     m_numOutstandingResources = 0;
 
     // Pointer fixup
@@ -218,8 +216,7 @@ HRESULT SimpleSdkMesh::CreateFromMemory()
     // error condition
     if (m_meshHeader->Version != SDKMESH_FILE_VERSION)
     {
-        hr = E_NOINTERFACE;
-        goto Error;
+        return E_NOINTERFACE;
     }
 
     // Setup buffer data pointer
@@ -349,9 +346,7 @@ HRESULT SimpleSdkMesh::CreateFromMemory()
         XMStoreFloat3(&currentMesh->BoundingBoxCenter, half);
     }
 
-    hr = S_OK;
-Error:
-    return hr;
+    return S_OK;
 }
 
 HRESULT SimpleSdkMesh::CreateVertexBuffer(SDKMESH_VERTEX_BUFFER_HEADER* header, void* vertices)
