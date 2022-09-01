@@ -256,7 +256,6 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Common\BasicLoader.cpp" />
     <ClCompile Include="Common\BasicReaderWriter.cpp" />
-    <ClCompile Include="Common\BinaryReader.cpp" />
     <ClCompile Include="Common\DDSTextureLoader.cpp" />
     <ClCompile Include="Common\DeviceResources.cpp" />
     <ClCompile Include="Common\MediaStreamer.cpp" />
@@ -287,7 +286,6 @@
     <ClInclude Include="Common\BasicLoader.h" />
     <ClInclude Include="Common\BasicMath.h" />
     <ClInclude Include="Common\BasicReaderWriter.h" />
-    <ClInclude Include="Common\BinaryReader.h" />
     <ClInclude Include="Common\DDSTextureLoader.h" />
     <ClInclude Include="Common\DeviceResources.h" />
     <ClInclude Include="Common\DirectXHelper.h" />

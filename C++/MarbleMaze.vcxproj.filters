@@ -162,9 +162,6 @@
     <ClCompile Include="Common\SimpleSdkMesh.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="Common\BinaryReader.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MarbleMazeMain.h" />
@@ -245,9 +242,6 @@
       <Filter>UserInterface</Filter>
     </ClInclude>
     <ClInclude Include="Common\SimpleSdkMesh.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\BinaryReader.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>

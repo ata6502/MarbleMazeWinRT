@@ -16,19 +16,32 @@
 
 #pragma once
 
-#define MAX_MESH_NAME 100
-#define MAX_VERTEX_STREAMS 16
-#define MAX_VERTEX_ELEMENTS 32
-#define MAX_SUBSET_NAME 100
-#define MAX_FRAME_NAME 100
-#define MAX_MATERIAL_NAME 100
-#define SDKMESH_FILE_VERSION 101
-#define INVALID_FRAME ((uint32_t)-1)
-#define INVALID_MESH ((uint32_t)-1)
-#define INVALID_SAMPLER_SLOT ((uint32_t)-1)
-#define ERROR_RESOURCE_VALUE 1
-#define MAX_MATERIAL_PATH MAX_PATH
-#define MAX_TEXTURE_NAME MAX_PATH
+//--------------------------------------------------------------------------------------
+// Hard defines for the various structures
+//--------------------------------------------------------------------------------------
+constexpr uint32_t SDKMESH_FILE_VERSION = 101;
+constexpr uint32_t MAX_FRAME_NAME = 100;
+constexpr uint32_t MAX_MATERIAL_NAME = 100; 
+constexpr uint32_t MAX_MESH_NAME = 100;
+constexpr uint32_t MAX_SUBSET_NAME = 100;
+constexpr uint32_t MAX_MATERIAL_PATH = MAX_PATH;
+constexpr uint32_t MAX_TEXTURE_NAME = MAX_PATH;
+constexpr uint32_t MAX_D3D11_VERTEX_STREAMS = D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT;
+constexpr uint32_t MAX_VERTEX_ELEMENTS = 32;
+constexpr uint32_t MAX_VERTEX_STREAMS = 16;
+constexpr uint32_t INVALID_FRAME = uint32_t(-1);
+constexpr uint32_t INVALID_MESH = uint32_t(-1);
+constexpr uint32_t INVALID_SAMPLER_SLOT = uint32_t(-1);
+
+//--------------------------------------------------------------------------------------
+// Error detection
+//--------------------------------------------------------------------------------------
+template <typename T> bool IsErrorResource(T data)
+{
+    constexpr uint32_t ERROR_RESOURCE_VALUE = 1;
+
+    return (data == (T)ERROR_RESOURCE_VALUE);
+}
 
 //--------------------------------------------------------------------------------------
 // Structures.  Unions with pointers are forced to 64bit.
@@ -219,18 +232,6 @@ enum class SDKMeshIndexType
 //
 // Platform helpers
 //
-template <typename TYPE> BOOL IsErrorResource(TYPE data)
-{
-    if ((TYPE)ERROR_RESOURCE_VALUE == data) {
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
-#ifndef SAFE_DELETE
-#define SAFE_DELETE(p)       { if (p) { delete (p); (p) = nullptr; } }
-#endif
 #ifndef SAFE_DELETE_ARRAY
 #define SAFE_DELETE_ARRAY(p) { if (p) { delete[] (p); (p) = nullptr; } }
 #endif

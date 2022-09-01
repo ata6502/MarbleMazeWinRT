@@ -45,23 +45,23 @@ void SimpleSdkMesh::Destroy()
         {
             for (uint64_t m = 0; m < m_meshHeader->NumMaterials; m++)
             {
-                ID3D11Resource* resource = nullptr;
+                winrt::com_ptr<ID3D11Resource> resource = nullptr;
                 if (m_materialArray[m].DiffuseRV && !IsErrorResource(m_materialArray[m].DiffuseRV))
                 {
-                    m_materialArray[m].DiffuseRV->GetResource(&resource);
-                    SAFE_RELEASE(resource);
+                    resource = nullptr;
+                    m_materialArray[m].DiffuseRV->GetResource(resource.put());
                     SAFE_RELEASE(m_materialArray[m].DiffuseRV);
                 }
                 if (m_materialArray[m].NormalRV && !IsErrorResource(m_materialArray[m].NormalRV))
                 {
-                    m_materialArray[m].NormalRV->GetResource(&resource);
-                    SAFE_RELEASE(resource);
+                    resource = nullptr;
+                    m_materialArray[m].NormalRV->GetResource(resource.put());
                     SAFE_RELEASE(m_materialArray[m].NormalRV);
                 }
                 if (m_materialArray[m].SpecularRV && !IsErrorResource(m_materialArray[m].SpecularRV))
                 {
-                    m_materialArray[m].SpecularRV->GetResource(&resource);
-                    SAFE_RELEASE(resource);
+                    resource = nullptr;
+                    m_materialArray[m].SpecularRV->GetResource(resource.put());
                     SAFE_RELEASE(m_materialArray[m].SpecularRV);
                 }
             }
@@ -501,7 +501,6 @@ void SimpleSdkMesh::LoadMaterials(ID3D11Device3* d3dDevice, _In_reads_(numMateri
     }
 }
 
-#define MAX_D3D11_VERTEX_STREAMS D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT
 void SimpleSdkMesh::RenderMesh(uint32_t meshIndex, bool adjacent, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot)
 {
     if (0 < GetOutstandingBufferResources())
