@@ -182,7 +182,7 @@ HRESULT SimpleSdkMesh::CreateFromFile(ID3D11Device3* d3dDevice, std::wstring con
     }
 
     // Read in the file
-    DWORD bytesRead;
+    DWORD bytesRead = 0;
     if (!ReadFile(file.get(), m_staticMeshData, byteCount, &bytesRead, nullptr))
     {
         winrt::throw_hresult(E_FAIL);
@@ -215,7 +215,7 @@ HRESULT SimpleSdkMesh::CreateFromMemory(ID3D11Device3* d3dDevice, byte* data, [[
         SDKMESH_HEADER* header = (SDKMESH_HEADER*)data;
 
         size_t staticSize = static_cast<size_t>(header->HeaderSize + header->NonBufferDataSize);
-        m_heapData = new BYTE[staticSize];
+        m_heapData = new uint8_t[staticSize];
         if (m_heapData == nullptr)
         {
             return hr;
@@ -406,7 +406,7 @@ HRESULT SimpleSdkMesh::CreateVertexBuffer(ID3D11Device* d3dDevice, SDKMESH_VERTE
     WCHAR objectName[MAX_PATH];
     wcsncpy_s(objectName, MAX_PATH, m_meshName.c_str(), m_meshName.size());
     wcscat_s(objectName, MAX_PATH, L"_VertexBuffer");
-    hr = header->VertexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)wcslen(objectName), objectName);
+    hr = header->VertexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, (uint32_t)wcslen(objectName), objectName);
 
     return hr;
 }
@@ -433,7 +433,7 @@ HRESULT SimpleSdkMesh::CreateIndexBuffer(ID3D11Device* d3dDevice, SDKMESH_INDEX_
     WCHAR objectName[MAX_PATH];
     wcsncpy_s(objectName, MAX_PATH, m_meshName.c_str(), m_meshName.size());
     wcscat_s(objectName, MAX_PATH, L"_IndexBuffer");
-    hr = header->IndexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)wcslen(objectName), objectName);
+    hr = header->IndexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, (uint32_t)wcslen(objectName), objectName);
 
     return hr;
 }

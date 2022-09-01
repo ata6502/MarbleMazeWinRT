@@ -73,25 +73,29 @@ struct SDKMESH_HEADER
     uint64_t MaterialDataOffset;
 };
 
-typedef struct _SDKMESHVERTEXELEMENT
+#pragma pack(push,4)
+
+struct D3DVERTEXELEMENT9
 {
-    WORD    Stream;     // Stream index
-    WORD    Offset;     // Offset in the stream in bytes
-    BYTE    Type;       // Data type
-    BYTE    Method;     // Processing method
-    BYTE    Usage;      // Semantics
-    BYTE    UsageIndex; // Semantic index
-} SDKMESHVERTEXELEMENT, * LPSDKMESHVERTEXELEMENT;
+    uint16_t Stream;     // Stream index
+    uint16_t Offset;     // Offset in the stream in bytes
+    uint8_t  Type;       // Data type
+    uint8_t  Method;     // Processing method
+    uint8_t  Usage;      // Semantics
+    uint8_t  UsageIndex; // Semantic index
+};
+
+#pragma pack(pop)
 
 struct SDKMESH_VERTEX_BUFFER_HEADER
 {
     uint64_t NumVertices;
     uint64_t SizeBytes;
     uint64_t StrideBytes;
-    SDKMESHVERTEXELEMENT Decl[MAX_VERTEX_ELEMENTS];
+    D3DVERTEXELEMENT9 Decl[MAX_VERTEX_ELEMENTS];
     union
     {
-        uint64_t DataOffset;                // (This also forces the union to 64bits)
+        uint64_t DataOffset; // forces the union to 64bits
         ID3D11Buffer* VertexBuffer;
     };
 };
@@ -103,7 +107,7 @@ struct SDKMESH_INDEX_BUFFER_HEADER
     uint32_t IndexType;
     union
     {
-        uint64_t DataOffset;                // (This also forces the union to 64bits)
+        uint64_t DataOffset; // forces the union to 64bits
         ID3D11Buffer* IndexBuffer;
     };
 };
@@ -111,32 +115,32 @@ struct SDKMESH_INDEX_BUFFER_HEADER
 struct SDKMESH_MESH
 {
     char Name[MAX_MESH_NAME];
-    BYTE NumVertexBuffers;
-    UINT VertexBuffers[MAX_VERTEX_STREAMS];
-    UINT IndexBuffer;
-    UINT NumSubsets;
-    UINT NumFrameInfluences;             // aka bones
+    uint8_t NumVertexBuffers;
+    uint32_t VertexBuffers[MAX_VERTEX_STREAMS];
+    uint32_t IndexBuffer;
+    uint32_t NumSubsets;
+    uint32_t NumFrameInfluences; // aka bones
 
     DirectX::XMFLOAT3 BoundingBoxCenter;
     DirectX::XMFLOAT3 BoundingBoxExtents;
 
     union
     {
-        uint64_t SubsetOffset;            // Offset to list of subsets (This also forces the union to 64bits)
-        UINT* Subsets;                  // Pointer to list of subsets
+        uint64_t SubsetOffset; // the offset to the list of subsets (forces the union to 64bits)
+        uint32_t* Subsets;     // pointer to list of subsets
     };
     union
     {
-        uint64_t FrameInfluenceOffset;    // Offset to list of frame influences (This also forces the union to 64bits)
-        UINT* FrameInfluences;          // Pointer to list of frame influences
+        uint64_t FrameInfluenceOffset; // the offset to the list of frame influences (forces the union to 64bits)
+        uint32_t* FrameInfluences;     // pointer to list of frame influences
     };
 };
 
 struct SDKMESH_SUBSET
 {
     char Name[MAX_SUBSET_NAME];
-    UINT MaterialID;
-    UINT PrimitiveType;
+    uint32_t MaterialID;
+    uint32_t PrimitiveType;
     uint64_t IndexStart;
     uint64_t IndexCount;
     uint64_t VertexStart;
@@ -146,12 +150,12 @@ struct SDKMESH_SUBSET
 struct SDKMESH_FRAME
 {
     char Name[MAX_FRAME_NAME];
-    UINT Mesh;
-    UINT ParentFrame;
-    UINT ChildFrame;
-    UINT SiblingFrame;
+    uint32_t Mesh;
+    uint32_t ParentFrame;
+    uint32_t ChildFrame;
+    uint32_t SiblingFrame;
     DirectX::XMFLOAT4X4 Matrix;
-    UINT AnimationDataIndex;        // Used to index which set of keyframes transforms this frame
+    uint32_t AnimationDataIndex; // used to index which set of keyframes transforms this frame
 };
 
 struct SDKMESH_MATERIAL
@@ -170,7 +174,7 @@ struct SDKMESH_MATERIAL
     DirectX::XMFLOAT4 Ambient;
     DirectX::XMFLOAT4 Specular;
     DirectX::XMFLOAT4 Emissive;
-    FLOAT Power;
+    float Power;
 
     union
     {
@@ -259,14 +263,14 @@ public:
 private:
     std::wstring m_meshName;
 
-    UINT m_numOutstandingResources;
+    uint32_t m_numOutstandingResources;
     ID3D11Device* m_d3dDevice;
 
     // Pointers to the data loaded in from the mesh file.
-    BYTE* m_staticMeshData;
-    BYTE* m_heapData;
-    BYTE** m_vertices;
-    BYTE** m_indices;
+    uint8_t* m_staticMeshData;
+    uint8_t* m_heapData;
+    uint8_t** m_vertices;
+    uint8_t** m_indices;
 
     // General mesh info
     SDKMESH_HEADER* m_meshHeader;
