@@ -257,10 +257,7 @@ public:
     DirectX::XMFLOAT3 GetMeshBoundingBoxExtents(uint32_t mesh);
 
 private:
-    HANDLE m_hFile;
-
-    WCHAR m_path[MAX_PATH];
-    WCHAR m_meshName[MAX_PATH];
+    std::wstring m_meshName;
 
     UINT m_numOutstandingResources;
     ID3D11Device* m_d3dDevice;
@@ -283,7 +280,7 @@ private:
     // Adjacency information (not part of the m_pStaticMeshData, so it must be created and destroyed separately)
     SDKMESH_INDEX_BUFFER_HEADER* m_adjacencyIndexBufferArray;
 
-    HRESULT CreateFromFile(ID3D11Device3* d3dDevice, WCHAR* filename, bool createAdjacencyIndices);
+    HRESULT CreateFromFile(ID3D11Device3* d3dDevice, std::wstring const& path, bool createAdjacencyIndices);
     HRESULT CreateFromMemory(ID3D11Device3* d3dDevice, byte* data, uint32_t byteCount, bool createAdjacencyIndices, bool copyStatic);
     HRESULT CreateVertexBuffer(ID3D11Device* d3dDevice, SDKMESH_VERTEX_BUFFER_HEADER* header, void* vertices);
     HRESULT CreateIndexBuffer(ID3D11Device* d3dDevice, SDKMESH_INDEX_BUFFER_HEADER* header, void* indices);

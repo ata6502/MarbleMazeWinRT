@@ -6,7 +6,6 @@
 using namespace DirectX;
 
 SimpleSdkMesh::SimpleSdkMesh() :
-    m_hFile(nullptr),
     m_d3dDevice(nullptr),
     m_staticMeshData(nullptr),
     m_heapData(nullptr),
@@ -21,7 +20,6 @@ SimpleSdkMesh::SimpleSdkMesh() :
     m_meshHeader(nullptr),
     m_subsetArray(nullptr),
     m_numOutstandingResources(0),
-    m_path(L""),
     m_meshName(L"")
 {
 }
@@ -145,79 +143,50 @@ DirectX::XMFLOAT3 SimpleSdkMesh::GetMeshBoundingBoxExtents(uint32_t mesh)
     return m_meshArray[mesh].BoundingBoxExtents;
 }
 
-HRESULT SimpleSdkMesh::CreateFromFile(ID3D11Device3* d3dDevice, WCHAR* filename, bool createAdjacencyIndices)
+HRESULT SimpleSdkMesh::CreateFromFile(ID3D11Device3* d3dDevice, std::wstring const& path, bool createAdjacencyIndices)
 {
     HRESULT hr = S_OK;
 
-    m_hFile = CreateFile2(filename, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING, nullptr);
+    winrt::file_handle file{ CreateFile2(path.c_str(), GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING, nullptr)};
 
-    if (INVALID_HANDLE_VALUE == m_hFile)
+    winrt::check_bool(bool{ file });
+    if (file.get() == INVALID_HANDLE_VALUE)
     {
-        DWORD errorCode = GetLastError();
-        const int msgSize = 512;
-        WCHAR message[msgSize];
-
-        DWORD result = FormatMessage(
-            FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-            nullptr,
-            errorCode,
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            message,
-            msgSize,
-            nullptr
-        );
-        if ((result > 0) && (result < msgSize))
-        {
-            OutputDebugString(message);
-        }
-
-        return E_FAIL;
+        winrt::throw_hresult(E_FAIL);
     }
 
-    // Store the directory path without the filename
-    wcsncpy_s(m_path, MAX_PATH, filename, wcslen(filename));
-    WCHAR* lastBSlash = wcsrchr(m_path, L'\\');
-    if (lastBSlash)
-    {
-        *(lastBSlash + 1) = L'\0';
-        wcscpy_s(m_meshName, MAX_PATH, lastBSlash + 2);
-    }
-    else
-    {
-        wcscpy_s(m_meshName, MAX_PATH, m_path);
-        *m_path = L'\0';
-    }
-
-    // Get the file size
     FILE_STANDARD_INFO fileInfo = { 0 };
-    if (!GetFileInformationByHandleEx(m_hFile, FileStandardInfo, &fileInfo, sizeof(fileInfo)))
+    if (!GetFileInformationByHandleEx(file.get(), FileStandardInfo, &fileInfo, sizeof(fileInfo)))
     {
-        winrt::throw_last_error();
+        winrt::throw_hresult(E_FAIL);
     }
 
     if (fileInfo.EndOfFile.HighPart != 0)
     {
-        return E_OUTOFMEMORY;
+        winrt::throw_hresult(E_OUTOFMEMORY);
     }
 
+    // Store the filename (without the extension) as the mesh name.
+    std::wstring filename = path.substr(path.find_last_of(L"/\\") + 1);
+    std::wstring::size_type const p(filename.find_last_of('.'));
+    m_meshName = filename.substr(0, p);
+
     uint32_t byteCount = fileInfo.EndOfFile.LowPart;
+    std::vector<byte> fileData(byteCount);
 
     // Allocate memory
     m_staticMeshData = new byte[byteCount];
     if (!m_staticMeshData)
     {
-        CloseHandle(m_hFile);
-        return E_OUTOFMEMORY;
+        winrt::throw_hresult(E_OUTOFMEMORY);
     }
 
     // Read in the file
     DWORD bytesRead;
-    if (!ReadFile(m_hFile, m_staticMeshData, byteCount, &bytesRead, nullptr))
+    if (!ReadFile(file.get(), m_staticMeshData, byteCount, &bytesRead, nullptr))
     {
-        hr = E_FAIL;
+        winrt::throw_hresult(E_FAIL);
     }
-
-    CloseHandle(m_hFile);
 
     if (SUCCEEDED(hr))
     {
@@ -435,7 +404,7 @@ HRESULT SimpleSdkMesh::CreateVertexBuffer(ID3D11Device* d3dDevice, SDKMESH_VERTE
         return hr;
 
     WCHAR objectName[MAX_PATH];
-    wcsncpy_s(objectName, MAX_PATH, m_meshName, wcslen(m_meshName));
+    wcsncpy_s(objectName, MAX_PATH, m_meshName.c_str(), m_meshName.size());
     wcscat_s(objectName, MAX_PATH, L"_VertexBuffer");
     hr = header->VertexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)wcslen(objectName), objectName);
 
@@ -462,7 +431,7 @@ HRESULT SimpleSdkMesh::CreateIndexBuffer(ID3D11Device* d3dDevice, SDKMESH_INDEX_
         return hr;
 
     WCHAR objectName[MAX_PATH];
-    wcsncpy_s(objectName, MAX_PATH, m_meshName, wcslen(m_meshName));
+    wcsncpy_s(objectName, MAX_PATH, m_meshName.c_str(), m_meshName.size());
     wcscat_s(objectName, MAX_PATH, L"_IndexBuffer");
     hr = header->IndexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)wcslen(objectName), objectName);
 
