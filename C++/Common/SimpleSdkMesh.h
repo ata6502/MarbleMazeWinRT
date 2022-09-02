@@ -262,8 +262,6 @@ public:
 
 private:
     std::wstring m_meshName;
-
-    uint32_t m_numOutstandingResources;
     ID3D11Device3* m_d3dDevice;
 
     // Pointers to the data loaded in from the mesh file.
@@ -285,7 +283,7 @@ private:
 
     HRESULT CreateFromFile(std::wstring const& path);
     HRESULT CreateFromMemory();
-    HRESULT CreateVertexBuffer(SDKMESH_VERTEX_BUFFER_HEADER* header, void* vertices);
+    void CreateVertexBuffer(SDKMESH_VERTEX_BUFFER_HEADER* header, void* vertices);
     HRESULT CreateIndexBuffer(SDKMESH_INDEX_BUFFER_HEADER* header, void* indices);
     void LoadMaterials(_In_reads_(numMaterials) SDKMESH_MATERIAL* materials, uint32_t numMaterials);
     void RenderMesh(uint32_t meshIndex, bool adjacent, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot);

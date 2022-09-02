@@ -17,7 +17,6 @@ SimpleSdkMesh::SimpleSdkMesh() :
     m_meshArray(nullptr),
     m_meshHeader(nullptr),
     m_subsetArray(nullptr),
-    m_numOutstandingResources(0),
     m_meshName(L"")
 {
 }
@@ -195,9 +194,7 @@ HRESULT SimpleSdkMesh::CreateFromFile(std::wstring const& path)
 
 HRESULT SimpleSdkMesh::CreateFromMemory()
 {
-    m_numOutstandingResources = 0;
-
-    // Pointer fixup
+    // Get data structures from the mesh file.
     m_meshHeader = reinterpret_cast<SDKMESH_HEADER*>(m_meshData.data());
     m_vertexBufferArray = reinterpret_cast<SDKMESH_VERTEX_BUFFER_HEADER*>(m_meshData.data() + m_meshHeader->VertexStreamHeadersOffset);
     m_indexBufferArray = reinterpret_cast<SDKMESH_INDEX_BUFFER_HEADER*>(m_meshData.data() + m_meshHeader->IndexStreamHeadersOffset);
@@ -349,9 +346,8 @@ HRESULT SimpleSdkMesh::CreateFromMemory()
     return S_OK;
 }
 
-HRESULT SimpleSdkMesh::CreateVertexBuffer(SDKMESH_VERTEX_BUFFER_HEADER* header, void* vertices)
+void SimpleSdkMesh::CreateVertexBuffer(SDKMESH_VERTEX_BUFFER_HEADER* header, void* vertices)
 {
-    HRESULT hr = S_OK;
     header->DataOffset = 0;
 
     // Vertex Buffer
@@ -364,16 +360,26 @@ HRESULT SimpleSdkMesh::CreateVertexBuffer(SDKMESH_VERTEX_BUFFER_HEADER* header, 
 
     D3D11_SUBRESOURCE_DATA initData;
     initData.pSysMem = vertices;
-    hr = m_d3dDevice->CreateBuffer(&bufferDesc, &initData, &header->VertexBuffer);
-    if (FAILED(hr))
-        return hr;
+
+    winrt::check_hresult(
+        m_d3dDevice->CreateBuffer(
+            &bufferDesc, 
+            &initData, 
+            &header->VertexBuffer
+        )
+    );
 
     WCHAR objectName[MAX_PATH];
     wcsncpy_s(objectName, MAX_PATH, m_meshName.c_str(), m_meshName.size());
     wcscat_s(objectName, MAX_PATH, L"_VertexBuffer");
-    hr = header->VertexBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, (uint32_t)wcslen(objectName), objectName);
 
-    return hr;
+    winrt::check_hresult(
+        header->VertexBuffer->SetPrivateData(
+            WKPDID_D3DDebugObjectName, 
+            (uint32_t)wcslen(objectName), 
+            objectName
+        )
+    );
 }
 
 HRESULT SimpleSdkMesh::CreateIndexBuffer(SDKMESH_INDEX_BUFFER_HEADER* header, void* indices)
