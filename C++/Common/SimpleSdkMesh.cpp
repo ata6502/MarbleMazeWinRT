@@ -7,7 +7,6 @@ using namespace DirectX;
 
 SimpleSdkMesh::SimpleSdkMesh() :
     m_d3dDevice(nullptr),
-    m_adjacencyIndexBufferArray(nullptr),
     m_frameArray(nullptr),
     m_vertexBufferArray(nullptr),
     m_indexBufferArray(nullptr),
@@ -31,7 +30,7 @@ HRESULT SimpleSdkMesh::Create(ID3D11Device3* device, WCHAR* filename)
 
 void SimpleSdkMesh::Render(ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot)
 {
-    RenderFrame(0, false, d3dContext, diffuseSlot, normalSlot, specularSlot);
+    RenderFrame(0, d3dContext, diffuseSlot, normalSlot, specularSlot);
 }
 
 void SimpleSdkMesh::Destroy()
@@ -65,14 +64,6 @@ void SimpleSdkMesh::Destroy()
         }
     }
 
-    if (m_adjacencyIndexBufferArray != nullptr)
-    {
-        for (uint64_t i = 0; i < m_meshHeader->NumIndexBuffers; i++)
-        {
-            SAFE_RELEASE(m_adjacencyIndexBufferArray[i].IndexBuffer);
-        }
-    }
-
     if (m_indexBufferArray != nullptr)
     {
         for (uint64_t i = 0; i < m_meshHeader->NumIndexBuffers; i++)
@@ -89,7 +80,6 @@ void SimpleSdkMesh::Destroy()
         }
     }
 
-    SAFE_DELETE_ARRAY(m_adjacencyIndexBufferArray);
     SAFE_DELETE_ARRAY(m_vertices);
     SAFE_DELETE_ARRAY(m_indices);
 
@@ -203,17 +193,15 @@ HRESULT SimpleSdkMesh::CreateFromMemory()
     m_frameArray = reinterpret_cast<SDKMESH_FRAME*>(m_meshData.data() + m_meshHeader->FrameDataOffset);
     m_materialArray = reinterpret_cast<SDKMESH_MATERIAL*>(m_meshData.data() + m_meshHeader->MaterialDataOffset);
 
+    // Check the supported mesh version.
+    if (m_meshHeader->Version != SDKMESH_FILE_VERSION)
+        return E_NOINTERFACE;
+
     // Setup subsets
     for (uint32_t i = 0; i < m_meshHeader->NumMeshes; i++)
     {
         m_meshArray[i].Subsets = (uint32_t*)(m_meshData.data() + m_meshArray[i].SubsetOffset);
         m_meshArray[i].FrameInfluences = (uint32_t*)(m_meshData.data() + m_meshArray[i].FrameInfluenceOffset);
-    }
-
-    // error condition
-    if (m_meshHeader->Version != SDKMESH_FILE_VERSION)
-    {
-        return E_NOINTERFACE;
     }
 
     // Setup buffer data pointer
@@ -441,7 +429,7 @@ void SimpleSdkMesh::LoadMaterials(_In_reads_(numMaterials) SDKMESH_MATERIAL* mat
     }
 }
 
-void SimpleSdkMesh::RenderMesh(uint32_t meshIndex, bool adjacent, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot)
+void SimpleSdkMesh::RenderMesh(uint32_t meshIndex, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot)
 {
     if (0 < GetOutstandingBufferResources())
     {
@@ -469,19 +457,9 @@ void SimpleSdkMesh::RenderMesh(uint32_t meshIndex, bool adjacent, ID3D11DeviceCo
         offsets[i] = 0;
     }
 
-    SDKMESH_INDEX_BUFFER_HEADER* indexBufferArray;
-    if (adjacent)
-    {
-        indexBufferArray = m_adjacencyIndexBufferArray;
-    }
-    else
-    {
-        indexBufferArray = m_indexBufferArray;
-    }
-
-    ID3D11Buffer* indexBuffer = indexBufferArray[mesh->IndexBuffer].IndexBuffer;
+    ID3D11Buffer* indexBuffer = m_indexBufferArray[mesh->IndexBuffer].IndexBuffer;
     DXGI_FORMAT indexBufferFormat = DXGI_FORMAT_R16_UINT;
-    switch (indexBufferArray[mesh->IndexBuffer].IndexType)
+    switch (m_indexBufferArray[mesh->IndexBuffer].IndexType)
     {
     case static_cast<uint32_t>(SDKMeshIndexType::Bits16):
         indexBufferFormat = DXGI_FORMAT_R16_UINT;
@@ -503,25 +481,6 @@ void SimpleSdkMesh::RenderMesh(uint32_t meshIndex, bool adjacent, ID3D11DeviceCo
         subset = &m_subsetArray[mesh->Subsets[i]];
 
         primitiveType = GetPrimitiveType(static_cast<SDKMeshPrimitiveType>(subset->PrimitiveType));
-        if (adjacent)
-        {
-            switch (primitiveType)
-            {
-            case D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST:
-                primitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ;
-                break;
-            case D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP:
-                primitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP_ADJ;
-                break;
-            case D3D11_PRIMITIVE_TOPOLOGY_LINELIST:
-                primitiveType = D3D11_PRIMITIVE_TOPOLOGY_LINELIST_ADJ;
-                break;
-            case D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP:
-                primitiveType = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP_ADJ;
-                break;
-            }
-        }
-
         d3dContext->IASetPrimitiveTopology(primitiveType);
 
         material = &m_materialArray[subset->MaterialID];
@@ -542,17 +501,11 @@ void SimpleSdkMesh::RenderMesh(uint32_t meshIndex, bool adjacent, ID3D11DeviceCo
         uint32_t indexStart = (uint32_t)subset->IndexStart;
         uint32_t vertexStart = (uint32_t)subset->VertexStart;
 
-        if (adjacent)
-        {
-            indexCount *= 2;
-            indexStart *= 2;
-        }
-
         d3dContext->DrawIndexed(indexCount, indexStart, vertexStart);
     }
 }
 
-void SimpleSdkMesh::RenderFrame(uint32_t frame, bool adjacent, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot)
+void SimpleSdkMesh::RenderFrame(uint32_t frame, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot)
 {
     if (m_meshData.size() == 0 || !m_frameArray)
     {
@@ -561,19 +514,19 @@ void SimpleSdkMesh::RenderFrame(uint32_t frame, bool adjacent, ID3D11DeviceConte
 
     if (m_frameArray[frame].Mesh != INVALID_MESH)
     {
-        RenderMesh(m_frameArray[frame].Mesh, adjacent, d3dContext, diffuseSlot, normalSlot, specularSlot);
+        RenderMesh(m_frameArray[frame].Mesh, d3dContext, diffuseSlot, normalSlot, specularSlot);
     }
 
     // Render our children
     if (m_frameArray[frame].ChildFrame != INVALID_FRAME)
     {
-        RenderFrame(m_frameArray[frame].ChildFrame, adjacent, d3dContext, diffuseSlot, normalSlot, specularSlot);
+        RenderFrame(m_frameArray[frame].ChildFrame, d3dContext, diffuseSlot, normalSlot, specularSlot);
     }
 
     // Render our siblings
     if (m_frameArray[frame].SiblingFrame != INVALID_FRAME)
     {
-        RenderFrame(m_frameArray[frame].SiblingFrame, adjacent, d3dContext, diffuseSlot, normalSlot, specularSlot);
+        RenderFrame(m_frameArray[frame].SiblingFrame, d3dContext, diffuseSlot, normalSlot, specularSlot);
     }
 }
 

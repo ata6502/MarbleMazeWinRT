@@ -278,16 +278,13 @@ private:
     SDKMESH_FRAME* m_frameArray;
     SDKMESH_MATERIAL* m_materialArray;
 
-    // Adjacency information (not part of the m_pStaticMeshData, so it must be created and destroyed separately)
-    SDKMESH_INDEX_BUFFER_HEADER* m_adjacencyIndexBufferArray;
-
     HRESULT CreateFromFile(std::wstring const& path);
     HRESULT CreateFromMemory();
     void CreateVertexBuffer(SDKMESH_VERTEX_BUFFER_HEADER* header, void* vertices);
     HRESULT CreateIndexBuffer(SDKMESH_INDEX_BUFFER_HEADER* header, void* indices);
     void LoadMaterials(_In_reads_(numMaterials) SDKMESH_MATERIAL* materials, uint32_t numMaterials);
-    void RenderMesh(uint32_t meshIndex, bool adjacent, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot);
-    void RenderFrame(uint32_t frame, bool adjacent, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot);
+    void RenderMesh(uint32_t meshIndex, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot);
+    void RenderFrame(uint32_t frame, ID3D11DeviceContext* d3dContext, uint32_t diffuseSlot, uint32_t normalSlot, uint32_t specularSlot);
 
     D3D11_PRIMITIVE_TOPOLOGY GetPrimitiveType(SDKMeshPrimitiveType primitiveType);
     uint32_t GetOutstandingBufferResources();
