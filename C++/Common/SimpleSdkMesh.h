@@ -256,8 +256,8 @@ public:
     SDKMESH_MESH* GetMesh(uint32_t mesh);
     SDKMESH_SUBSET* GetSubset(uint32_t mesh, uint32_t subset);
     uint32_t GetNumSubsets(uint32_t mesh);
-    byte* GetRawIndicesAt(uint32_t indexBuffer);
-    byte* GetRawVerticesAt(uint32_t vertexBuffer);
+    uint8_t* GetRawIndicesAt(uint32_t indexBuffer);
+    uint8_t* GetRawVerticesAt(uint32_t vertexBuffer);
     DirectX::XMFLOAT3 GetMeshBoundingBoxExtents(uint32_t mesh);
 
 private:

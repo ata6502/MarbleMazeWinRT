@@ -115,12 +115,12 @@ uint32_t SimpleSdkMesh::GetNumSubsets(uint32_t mesh)
     return m_meshArray[mesh].NumSubsets;
 }
 
-byte* SimpleSdkMesh::GetRawIndicesAt(uint32_t indexBuffer)
+uint8_t* SimpleSdkMesh::GetRawIndicesAt(uint32_t indexBuffer)
 {
     return m_indices[indexBuffer];
 }
 
-byte* SimpleSdkMesh::GetRawVerticesAt(uint32_t vertexBuffer)
+uint8_t* SimpleSdkMesh::GetRawVerticesAt(uint32_t vertexBuffer)
 {
     return m_vertices[vertexBuffer];
 }
@@ -205,27 +205,27 @@ HRESULT SimpleSdkMesh::CreateFromMemory()
     }
 
     // Setup buffer data pointer
-    byte* bufferData = m_meshData.data() + m_meshHeader->HeaderSize + m_meshHeader->NonBufferDataSize;
+    uint8_t* bufferData = m_meshData.data() + m_meshHeader->HeaderSize + m_meshHeader->NonBufferDataSize;
 
     // Get the start of the buffer data
     uint64_t bufferDataStart = m_meshHeader->HeaderSize + m_meshHeader->NonBufferDataSize;
 
     // Create vertex buffers
-    m_vertices = new byte * [m_meshHeader->NumVertexBuffers];
+    m_vertices = new uint8_t* [m_meshHeader->NumVertexBuffers];
     for (uint32_t i = 0; i < m_meshHeader->NumVertexBuffers; i++)
     {
-        byte* vertices = nullptr;
-        vertices = (byte*)(bufferData + (m_vertexBufferArray[i].DataOffset - bufferDataStart));
+        uint8_t* vertices = nullptr;
+        vertices = (uint8_t*)(bufferData + (m_vertexBufferArray[i].DataOffset - bufferDataStart));
         CreateVertexBuffer(&m_vertexBufferArray[i], vertices);
         m_vertices[i] = vertices;
     }
 
     // Create index buffers
-    m_indices = new byte * [m_meshHeader->NumIndexBuffers];
+    m_indices = new uint8_t * [m_meshHeader->NumIndexBuffers];
     for (uint32_t i = 0; i < m_meshHeader->NumIndexBuffers; i++)
     {
-        byte* indices = nullptr;
-        indices = (byte*)(bufferData + (m_indexBufferArray[i].DataOffset - bufferDataStart));
+        uint8_t* indices = nullptr;
+        indices = (uint8_t*)(bufferData + (m_indexBufferArray[i].DataOffset - bufferDataStart));
         CreateIndexBuffer(&m_indexBufferArray[i], indices);
         m_indices[i] = indices;
     }
@@ -599,4 +599,3 @@ uint32_t SimpleSdkMesh::GetOutstandingBufferResources()
 
     return outstandingResources;
 }
-
