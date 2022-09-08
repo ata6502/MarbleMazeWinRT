@@ -132,25 +132,23 @@ DirectX::XMFLOAT3 SimpleSdkMesh::GetMeshBoundingBoxExtents(uint32_t mesh)
 
 HRESULT SimpleSdkMesh::CreateFromFile(std::wstring const& path)
 {
-    HRESULT hr = S_OK;
-
     winrt::file_handle file{ CreateFile2(path.c_str(), GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING, nullptr)};
 
     winrt::check_bool(bool{ file });
     if (file.get() == INVALID_HANDLE_VALUE)
     {
-        winrt::throw_hresult(E_FAIL);
+        return E_FAIL;
     }
 
     FILE_STANDARD_INFO fileInfo = { 0 };
     if (!GetFileInformationByHandleEx(file.get(), FileStandardInfo, &fileInfo, sizeof(fileInfo)))
     {
-        winrt::throw_hresult(E_FAIL);
+        return E_FAIL;
     }
 
     if (fileInfo.EndOfFile.HighPart != 0)
     {
-        winrt::throw_hresult(E_OUTOFMEMORY);
+        return E_OUTOFMEMORY;
     }
 
     // Store the filename (without the extension) as the mesh name.
@@ -167,16 +165,14 @@ HRESULT SimpleSdkMesh::CreateFromFile(std::wstring const& path)
     DWORD bytesRead = 0;
     if (!ReadFile(file.get(), static_cast<LPVOID>(m_meshData.data()), byteCount, &bytesRead, nullptr))
     {
-        winrt::throw_hresult(E_FAIL);
+        return E_FAIL;
     }
 
-    if (SUCCEEDED(hr))
+    HRESULT hr = CreateFromMemory();
+    if (FAILED(hr))
     {
-        hr = CreateFromMemory();
-        if (FAILED(hr))
-        {
-            m_meshData.clear();
-        }
+        m_meshData.clear();
+        return E_FAIL;
     }
 
     return hr;
