@@ -5,7 +5,7 @@
 //
 // Copyright (c) Microsoft Corporation. All rights reserved
 //
-// Converted to WinRT/C++ by ata6502
+// Converted to WinRT/C++ and modified by ata6502
 
 #include "pch.h"
 #include "Camera.h"
@@ -26,22 +26,32 @@ void Camera::GetProjectionMatrix(_Out_ XMFLOAT4X4* projectionMatrix)
 void Camera::SetViewParameters(
     _In_ XMFLOAT3 eyePosition,    // the position of the camera
     _In_ XMFLOAT3 lookPosition,   // the point the camera should look at
-    _In_ XMFLOAT3 up              // the durection vector for up
+    _In_ XMFLOAT3 up              // the direction vector for up
 )
 {
-    m_position = eyePosition;
-    XMStoreFloat3(&m_direction, XMVector3Normalize(XMLoadFloat3(&lookPosition) - XMLoadFloat3(&eyePosition)));
-    XMFLOAT3 zAxis = m_direction;
+    // The position of the camera.
+    XMVECTOR position = XMLoadFloat3(&eyePosition);
+
+    // The unit vector of the viewing direction.
+    XMVECTOR direction = 
+        XMVector3Normalize(
+            XMLoadFloat3(&lookPosition) - position
+        );
+
+    XMFLOAT3 zAxis;
+    XMStoreFloat3(&zAxis, direction);
     XMFLOAT3 xAxis;
     XMStoreFloat3(&xAxis, XMVector3Normalize(XMVector3Cross(XMLoadFloat3(&up), XMLoadFloat3(&zAxis))));
     XMFLOAT3 yAxis;
     XMStoreFloat3(&yAxis, XMVector3Cross(XMLoadFloat3(&zAxis), XMLoadFloat3(&xAxis)));
+
     float xOffset;
-    XMStoreFloat(&xOffset, -XMVector3Dot(XMLoadFloat3(&xAxis), XMLoadFloat3(&m_position)));
+    XMStoreFloat(&xOffset, -XMVector3Dot(XMLoadFloat3(&xAxis), position));
     float yOffset;
-    XMStoreFloat(&yOffset, -XMVector3Dot(XMLoadFloat3(&yAxis), XMLoadFloat3(&m_position)));
+    XMStoreFloat(&yOffset, -XMVector3Dot(XMLoadFloat3(&yAxis), position));
     float zOffset;
-    XMStoreFloat(&zOffset, -XMVector3Dot(XMLoadFloat3(&zAxis), XMLoadFloat3(&m_position)));
+    XMStoreFloat(&zOffset, -XMVector3Dot(XMLoadFloat3(&zAxis), position));
+
     m_view = XMFLOAT4X4(
         xAxis.x, xAxis.y, xAxis.z, xOffset,
         yAxis.x, yAxis.y, yAxis.z, yOffset,
@@ -60,6 +70,7 @@ void Camera::SetProjectionParameters(
     float minScale = 1.0f / tan(minimumFieldOfView * XM_PI / 360.0f);
     float xScale = 1.0f;
     float yScale = 1.0f;
+
     if (aspectRatio < 1.0f)
     {
         xScale = minScale;
@@ -70,7 +81,9 @@ void Camera::SetProjectionParameters(
         xScale = minScale / aspectRatio;
         yScale = minScale;
     }
+
     float zScale = farPlane / (farPlane - nearPlane);
+
     m_projection = XMFLOAT4X4(
         xScale, 0.0f, 0.0f, 0.0f,
         0.0f, yScale, 0.0f, 0.0f,

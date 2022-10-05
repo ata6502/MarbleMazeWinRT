@@ -12,12 +12,6 @@
 // a simple camera class
 class Camera
 {
-private:
-    DirectX::XMFLOAT3 m_position;      // the position of the camera
-    DirectX::XMFLOAT3 m_direction;     // the unit vector of the viewing direction
-    DirectX::XMFLOAT4X4 m_view;        // view matrix
-    DirectX::XMFLOAT4X4 m_projection;  // projection matrix
-
 public:
     void GetViewMatrix(_Out_ DirectX::XMFLOAT4X4* viewMatrix);
     void GetProjectionMatrix(_Out_ DirectX::XMFLOAT4X4* projectionMatrix);
@@ -36,4 +30,8 @@ public:
         _In_ float nearPlane,           // depth to map to 0
         _In_ float farPlane             // depth to map to 1
     );
+
+private:
+    DirectX::XMFLOAT4X4 m_view;        // view matrix
+    DirectX::XMFLOAT4X4 m_projection;  // projection matrix
 };
