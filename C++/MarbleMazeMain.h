@@ -60,28 +60,28 @@ namespace MarbleMaze
         MarbleMazeMain(std::shared_ptr<DX::DeviceResources> const& deviceResources);
         ~MarbleMazeMain();
 
-        // IDeviceNotify
-        virtual void OnDeviceLost();
-        virtual void OnDeviceRestored();
-
         void CreateWindowSizeDependentResources();
         void Run();
+        void SetWindowVisibility(bool visible);
 
         winrt::Windows::Foundation::IAsyncAction LoadDeferredResourcesAsync(bool delay, bool deviceOnly);
 
-        void OnSuspending();
-        void OnResuming();
-
+        void OnFocusChange(bool active);
         void AddTouch(int id, winrt::Windows::Foundation::Point point);
         void UpdateTouch(int id, winrt::Windows::Foundation::Point point);
         void RemoveTouch(int id);
         void KeyDown(winrt::Windows::System::VirtualKey key);
         void KeyUp(winrt::Windows::System::VirtualKey key);
-        void OnFocusChange(bool active);
         bool IsDeferredLoadReady() { return m_deferredResourcesReady; }
-        void SetWindowVisibility(bool visible);
         void SetWindowClosed();
         void ReleaseUserInterfaceResources();
+
+        void OnSuspending();
+        void OnResuming();
+
+        // IDeviceNotify
+        virtual void OnDeviceLost();
+        virtual void OnDeviceRestored();
 
     private:
         // Cached pointer to device resources.
