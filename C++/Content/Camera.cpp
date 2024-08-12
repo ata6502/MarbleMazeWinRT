@@ -86,6 +86,9 @@ void Camera::SetProjectionParameters(
 
     float zScale = farPlane / (farPlane - nearPlane);
 
+    // A procedure to obtain the projection matrix is described here: 
+    // https://learn.microsoft.com/en-us/windows/win32/direct3d9/projection-transform#setting-up-a-projection-matrix
+    // The matrix is already transposed.
     m_projection = XMFLOAT4X4(
         xScale, 0.0f, 0.0f, 0.0f,
         0.0f, yScale, 0.0f, 0.0f,
