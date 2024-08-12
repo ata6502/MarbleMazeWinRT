@@ -44,14 +44,12 @@ public:
         return XMVector3Equal(planeNormal, XMVectorZero());
     }
 
-    // Tests this triangle against another one to see if it a) shares any edges, and b) is coplanar
-    FORCEINLINE void CheckSharesVertsOrCoplanar(
+    // Tests this triangle against another one to see if they share any vertices.
+    // This method may have bugs as noted here: https://github.com/microsoft/Windows-appsample-marble-maze/issues/8
+    FORCEINLINE bool SharesVerts(
         DirectX::FXMVECTOR V0,
         DirectX::FXMVECTOR V1,
-        DirectX::FXMVECTOR V2,
-        DirectX::CXMVECTOR planeIn,
-        bool& sharesEdgeOut,
-        bool& coplanar
+        DirectX::FXMVECTOR V2
     ) const
     {
         using namespace DirectX;
@@ -87,10 +85,18 @@ public:
             )
         );
 
-        sharesEdgeOut = XMVector3EqualInt(sharesEdge, XMVectorTrueInt());
+        return XMVector3EqualInt(sharesEdge, XMVectorTrueInt());
+    }
+
+    // Checks if this triangle is coplanar with a given plane.
+    FORCEINLINE bool IsCoplanar(
+        DirectX::CXMVECTOR planeIn
+    ) const
+    {
+        using namespace DirectX;
 
         const XMVECTOR VP = XMLoadFloat3((XMFLOAT3*)&plane);
-        coplanar = XMVector3Equal(VP, planeIn);
+        return XMVector3Equal(VP, planeIn);
     }
 
     // Returns the unit normal of the triangle surface..

@@ -171,8 +171,8 @@ void Collision::MergeSharedEdgeCoplanarContacts(FXMVECTOR sphere, FXMVECTOR radi
             if (!c2.IsColliding())
                 continue;
 
-            bool coplanar, sharesverts;
-            c2.triangle.CheckSharesVertsOrCoplanar(A, B, C, N, sharesverts, coplanar);
+            bool sharesverts = c2.triangle.SharesVerts(A, B, C);
+            bool coplanar = c2.triangle.IsCoplanar(N);
 
             if (sharesverts)
             {
