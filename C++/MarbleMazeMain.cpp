@@ -837,6 +837,8 @@ void MarbleMazeMain::Update()
             XMStoreFloat3(&g, gravity);
             m_physics.SetGravity(g);
 
+            //DebugTrace(L"gravity = (%4.2f, %4.2f, %4.2f)\n", g.x, g.y, g.z);
+
             if (m_gameState == GameState::InGameActive)
             {
                 // Only update physics when gameplay is active.
