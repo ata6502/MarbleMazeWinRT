@@ -11,9 +11,8 @@
 
 #include "BasicLoader.h"
 #include "MarbleMazeMain.h"
-#include "UserInterface.h"
-
 #include "SimpleSdkMesh.h"
+#include "UserInterface.h"
 
 #include <DirectXColors.h> // for named colors
 
@@ -37,8 +36,8 @@ MarbleMazeMain::MarbleMazeMain(std::shared_ptr<DX::DeviceResources> const& devic
     // Register to be notified if the Device is lost or recreated.
     m_deviceResources->RegisterDeviceNotify(this);
 
-    ZeroMemory(&m_newReading, sizeof(m_newReading));
-    ZeroMemory(&m_oldReading, sizeof(m_oldReading));
+    ZeroMemory(&m_newReading, sizeof(m_newReading)); // used with gamepad
+    ZeroMemory(&m_oldReading, sizeof(m_oldReading)); // used with gamepad
 
     ZeroMemory(&m_mazeConstantBufferData, sizeof(m_mazeConstantBufferData));
     ZeroMemory(&m_marbleConstantBufferData, sizeof(m_marbleConstantBufferData));
@@ -95,24 +94,30 @@ MarbleMazeMain::MarbleMazeMain(std::shared_ptr<DX::DeviceResources> const& devic
     */
 
     // Input
+
+    // used with gamepad
     for (auto const& gamepad : Gamepad::Gamepads())
     {
         m_myGamepads.push_back(gamepad);
     }
 
+    // used with gamepad
     Gamepad::GamepadAdded({ this, &MarbleMazeMain::OnGamepadAdded });
     Gamepad::GamepadRemoved({ this, &MarbleMazeMain::OnGamepadRemoved });
 
+    // used with gamepad
     m_gamepad = GetLastGamepad();
     m_currentGamepadNeedsRefresh = false;
 }
 
+// used with gamepad
 void MarbleMazeMain::OnGamepadAdded(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Gaming::Input::Gamepad const& gamepad)
 {
     m_myGamepads.push_back(gamepad);
     m_currentGamepadNeedsRefresh = true;
 }
 
+// used with gamepad
 void MarbleMazeMain::OnGamepadRemoved(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Gaming::Input::Gamepad const& gamepad)
 {
     // Try to find the given gamepad.
@@ -654,7 +659,7 @@ void MarbleMazeMain::Update()
             float combinedTiltY = 0.0f;
 
             // Check whether the user paused or resumed the game.
-            if (ButtonJustPressed(GamepadButtons::Menu) || m_pauseKeyPressed)
+            if (ButtonJustPressed(GamepadButtons::Menu) || m_pauseKeyPressed) // ButtonJustPressed is used with gamepad
             {
                 m_pauseKeyPressed = false;
 
@@ -669,7 +674,7 @@ void MarbleMazeMain::Update()
             }
 
             // Check whether the user restarted the game or cleared the high score table.
-            if (ButtonJustPressed(GamepadButtons::View) || m_homeKeyPressed)
+            if (ButtonJustPressed(GamepadButtons::View) || m_homeKeyPressed) // ButtonJustPressed is used with gamepad
             {
                 m_homeKeyPressed = false;
 
@@ -695,6 +700,7 @@ void MarbleMazeMain::Update()
             }
 
             // Handle menu navigation.
+            // ButtonJustPressed is used with gamepad
             bool chooseSelection = (ButtonJustPressed(GamepadButtons::A) || ButtonJustPressed(GamepadButtons::Menu));
             bool moveUp = ButtonJustPressed(GamepadButtons::DPadUp);
             bool moveDown = ButtonJustPressed(GamepadButtons::DPadDown);
@@ -702,11 +708,13 @@ void MarbleMazeMain::Update()
             switch (m_gameState)
             {
             case GameState::MainMenu:
+                // chooseSelection is used with gamepad
                 if (chooseSelection)
                 {
                     m_audio.PlaySoundEffect(MenuSelectedEvent);
                     m_ui->SetPressedButton();
                 }
+                // moveUp and moveDown is used with gamepad
                 if (moveUp || moveDown)
                 {
                     m_ui->ToggleSelectedButton();
@@ -715,14 +723,14 @@ void MarbleMazeMain::Update()
                 break;
 
             case GameState::HighScoreDisplay:
-                if (chooseSelection || anyPoints)
+                if (chooseSelection || anyPoints) // chooseSelection is used with gamepad
                 {
                     SetGameState(GameState::MainMenu);
                 }
                 break;
 
             case GameState::PostGameResults:
-                if (chooseSelection || anyPoints)
+                if (chooseSelection || anyPoints) // chooseSelection is used with gamepad
                 {
                     SetGameState(GameState::HighScoreDisplay);
                 }
@@ -751,6 +759,7 @@ void MarbleMazeMain::Update()
             }
 
             // Process controller input.
+#pragma region used with gamepad
             if (m_currentGamepadNeedsRefresh)
             {
                 auto mostRecentGamepad = GetLastGamepad();
@@ -780,6 +789,7 @@ void MarbleMazeMain::Update()
                 combinedTiltX += leftStickX * m_controllerScaleFactor;
                 combinedTiltY += leftStickY * m_controllerScaleFactor;
             }
+#pragma endregion used with gamepad
 
             // Account for touch input.
             for (TouchMap::const_iterator iter = m_touches.cbegin(); iter != m_touches.cend(); ++iter)
@@ -1311,6 +1321,7 @@ winrt::fire_and_forget MarbleMazeMain::HandleDeviceRestored()
     co_await LoadDeferredResourcesAsync(true, true);
 }
 
+// used with gamepad
 bool MarbleMazeMain::ButtonJustPressed(GamepadButtons selection)
 {
     bool newSelectionPressed = (selection == (m_newReading.Buttons & selection));
@@ -1318,6 +1329,7 @@ bool MarbleMazeMain::ButtonJustPressed(GamepadButtons selection)
     return newSelectionPressed && !oldSelectionPressed;
 }
 
+// used with gamepad
 bool MarbleMazeMain::ButtonJustReleased(GamepadButtons selection)
 {
     bool newSelectionReleased = (GamepadButtons::None == (m_newReading.Buttons & selection));
@@ -1325,6 +1337,7 @@ bool MarbleMazeMain::ButtonJustReleased(GamepadButtons selection)
     return newSelectionReleased && !oldSelectionReleased;
 }
 
+// used with gamepad
 winrt::Windows::Gaming::Input::Gamepad MarbleMazeMain::GetLastGamepad()
 {
     if (m_myGamepads.size() > 0)
