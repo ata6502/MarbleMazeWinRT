@@ -43,7 +43,6 @@ MarbleMazeMain::MarbleMazeMain(std::shared_ptr<DX::DeviceResources> const& devic
     ZeroMemory(&m_mazeConstantBufferData, sizeof(m_mazeConstantBufferData));
     ZeroMemory(&m_marbleConstantBufferData, sizeof(m_marbleConstantBufferData));
     m_vertexStride = 0;
-    m_resetCamera = false;
     m_resetMarbleRotation = false;
     m_currentCheckpoint = 0;
 
