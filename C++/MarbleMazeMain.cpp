@@ -903,7 +903,7 @@ void MarbleMazeMain::Update()
 
 #pragma region Update Camera
 
-            static float eyeDistance = 200.0f;
+            static float eyeDistance = 200.0f; // increase this value (e.g., 600) as well a the farPlane z-value in SetProjectionParameters (e.g., 800) to have a "bird-eye view" over the maze
             static XMFLOAT3A eyePosition = XMFLOAT3A(0, 0, 0);
 
             // Gradually move the camera above the marble.
