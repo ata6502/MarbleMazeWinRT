@@ -29,6 +29,8 @@ void Camera::SetViewParameters(
     _In_ XMFLOAT3 up              // the direction vector for up
 )
 {
+    //DebugTrace(L"Eye = (%4.2f, %4.2f, %4.2f)\n", eyePosition.x, eyePosition.y, eyePosition.z);
+
     // The position of the camera.
     XMVECTOR position = XMLoadFloat3(&eyePosition);
 

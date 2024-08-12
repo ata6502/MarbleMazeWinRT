@@ -17,7 +17,7 @@ public:
     DirectX::XMFLOAT3 C;
     DirectX::XMFLOAT4 plane;
 
-    Triangle(const Triangle& rhs)
+    Triangle(Triangle const& rhs)
     {
         A = rhs.A;
         B = rhs.B;
@@ -25,13 +25,17 @@ public:
         plane = rhs.plane;
     }
 
-    Triangle(const DirectX::XMFLOAT3& V0, const DirectX::XMFLOAT3& V1, const DirectX::XMFLOAT3& V2) :
+    Triangle(DirectX::XMFLOAT3 const& V0, DirectX::XMFLOAT3 const& V1, DirectX::XMFLOAT3 const& V2) :
         A(V0),
         B(V1),
         C(V2)
     {
         using namespace DirectX;
 
+        // Create a plane from three points (the triangle verticies) on the plane. XMPlaneFromPoints returns a vector 
+        // whose components are the coefficients of the plane (A, B, C, D) for the plane equation Ax + By + Cz + D = 0,
+        // where D = -n dot v0. When representing a plane in code, it suffices to store only the normal vector n and 
+        // the constant d as XMFLOAT4.
         XMStoreFloat4(&plane, XMPlaneFromPoints(XMLoadFloat3(&V0), XMLoadFloat3(&V1), XMLoadFloat3(&V2)));
     }
 
@@ -53,6 +57,10 @@ public:
     ) const
     {
         using namespace DirectX;
+
+        // XMVectorOrInt computes the logical OR of two vectors, treating each component as an unsigned integer.
+        // XMVectorEqual performs a per-component test for equality of two vectors. Returns a vector containing 
+        // the results of each component test.
 
         const XMVECTOR VA = XMLoadFloat3(&A);
         XMVECTOR sharesEdge = XMVectorOrInt(
@@ -124,7 +132,7 @@ struct Sphere
         ZeroMemory(&center, sizeof(center));
     }
 
-    explicit Sphere(const DirectX::XMFLOAT3& centerIn, FLOAT radius)
+    explicit Sphere(DirectX::XMFLOAT3 const& centerIn, FLOAT radius)
     {
         center = DirectX::XMFLOAT4(centerIn.x, centerIn.y, centerIn.z, radius);
     }
