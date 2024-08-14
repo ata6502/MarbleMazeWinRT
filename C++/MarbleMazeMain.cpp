@@ -202,10 +202,9 @@ void MarbleMazeMain::Run()
 
 winrt::Windows::Foundation::IAsyncAction MarbleMazeMain::LoadDeferredResourcesAsync(bool delay, bool deviceOnly)
 {
+    auto device{ m_deviceResources->GetD3DDevice() };
+    BasicLoader loader{ device };
     DX::StepTimer loadingTimer;
-
-    auto d3dDevice{ m_deviceResources->GetD3DDevice() };
-    BasicLoader loader{ d3dDevice };
 
     D3D11_INPUT_ELEMENT_DESC layoutDesc[] =
     {
@@ -237,7 +236,7 @@ winrt::Windows::Foundation::IAsyncAction MarbleMazeMain::LoadDeferredResourcesAs
     constantBufferDesc.StructureByteStride = 0;
 
     winrt::check_hresult(
-        m_deviceResources->GetD3DDevice()->CreateBuffer(
+        device->CreateBuffer(
             &constantBufferDesc,
             nullptr,             // leave the buffer uninitialized
             m_constantBuffer.put()
@@ -265,7 +264,7 @@ winrt::Windows::Foundation::IAsyncAction MarbleMazeMain::LoadDeferredResourcesAs
     blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
     winrt::check_hresult(
-        m_deviceResources->GetD3DDevice()->CreateBlendState(
+        device->CreateBlendState(
             &blendDesc,
             m_blendState.put()
         )
@@ -292,7 +291,7 @@ winrt::Windows::Foundation::IAsyncAction MarbleMazeMain::LoadDeferredResourcesAs
     samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
     winrt::check_hresult(
-        m_deviceResources->GetD3DDevice()->CreateSamplerState(
+        device->CreateSamplerState(
             &samplerDesc,
             m_sampler.put()
         )
@@ -303,14 +302,14 @@ winrt::Windows::Foundation::IAsyncAction MarbleMazeMain::LoadDeferredResourcesAs
     // Load the meshes.
     winrt::check_hresult(
         m_mazeMesh.Create(
-            m_deviceResources->GetD3DDevice().get(),
+            device.get(),
             L"Media\\Models\\maze1.sdkmesh"
         )
     );
 
     winrt::check_hresult(
         m_marbleMesh.Create(
-            m_deviceResources->GetD3DDevice().get(),
+            device.get(),
             L"Media\\Models\\marble2.sdkmesh"
         )
     );
